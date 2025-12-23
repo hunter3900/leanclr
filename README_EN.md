@@ -87,10 +87,19 @@ Usage:
 
 ### Testing custom code
 
-- Scope: currently validated only with .NET Framework 4.x core libraries; type forwarding is not implemented yet, so .NET Standard/CoreCLR core libs are unsupported.
-- Prepare: create a .NET Framework 4.x class library (or a Unity assembly), add at least one `static` entry method, and build it into a DLL.
-- Run: on Win64, execute the DLL with `lean`; for H5, adjust the loading logic in [demo/h5/index.html](demo/h5/index.html) before testing.
+- Scope: validated only with .NET Framework 4.x core libraries; type forwarding is not implemented, so .NET Standard/CoreCLR core libs are unsupported.
+
 - Dependencies: [demo/win64/dotnetframework](demo/win64/dotnetframework) ships only a few DLLs. If you need more framework DLLs, add their search paths with `-l <dll search path>`.
+
+Quick path:
+
+1. Open [demo/test/Tests.sln](demo/test/Tests.sln) and edit `App::Main` and related code. LeanCLR largely covers ECMA-335; as long as you avoid OS-specific APIs, complex C# (exceptions, reflection, etc.) runs fine.
+2. Build CoreTests.dll (Debug or Release) and copy it from the build output to [demo/win64](demo/win64), replacing the existing CoreTests.dll.
+3. On Win64, run [demo/win64/run.bat](demo/win64/run.bat); for H5, adjust the loading logic in [demo/h5/index.html](demo/h5/index.html) before testing.
+
+Notes:
+
+- Currently only `System.Diagnostics.Debugger::Log` is available for logging; avoid `Console.WriteLine` or `UnityEngine.Debug.Log` and similar APIs.
 
 ## Contact
 

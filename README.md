@@ -85,12 +85,21 @@ lean -l dotnetframework CoreTests -e test.App::Main
 - 点击 “Load wasm” 按钮以加载并初始化 LeanCLR。
 - 点击 “Run CoreTests::test.App::Main” 按钮以运行示例，可见输出 `Hello, World!`。
 
-### 测试自定义代码
+### 快速测试自定义代码
 
-- 环境限制：目前仅验证 .NET Framework 4.x 核心库，尚未实现 type forward，暂不支持 .NET Standard/CoreCLR 核心库。
-- 准备：创建基于 .NET Framework 4.x 的类库（或在 Unity 中创建程序集），编写至少一个 `static` 入口方法并编译为 DLL。
-- 运行：在 Win64 下使用 `lean` 执行；如需在 H5 测试，请同步调整 [demo/h5/index.html](demo/h5/index.html) 中的加载逻辑。
-- 依赖： [demo/win64/dotnetframework](demo/win64/dotnetframework) 仅包含少量 DLL，如需额外框架 DLL，请使用 `-l <dll search path>` 指定搜索路径。
+**兼容性**：仅验证 .NET Framework 4.x 核心库；未实现 type forward，暂不支持 .NET Standard/CoreCLR 核心库。
+
+**依赖**： [demo/win64/dotnetframework](demo/win64/dotnetframework) 只包含少量 DLL，如需额外框架 DLL，请用 `-l <dll search path>` 增补搜索路径。
+
+快速流程：
+
+1. 打开 [demo/test/Tests.sln](demo/test/Tests.sln) 并修改 `App::Main` 等代码。LeanCLR 已基本覆盖 ECMA-335，只要不调用操作系统相关 API，包含异常、反射在内的复杂 C# 代码都可正常运行。
+2. 编译生成 CoreTests.dll（Debug/Release 任一皆可），将输出目录下的 CoreTests.dll 复制到 [demo/win64](demo/win64)，替换原文件。
+3. 在 Win64 运行 [demo/win64/run.bat](demo/win64/run.bat)；如需在 H5 测试，请同步调整 [demo/h5/index.html](demo/h5/index.html) 的加载逻辑。
+
+补充说明：
+
+- 目前仅有 `System.Diagnostics.Debugger::Log` 可用于日志输出，请不要使用 Console.WriteLine 或 UnityEngine.Debug.Log 等接口。
 
 ## 联系方式
 
