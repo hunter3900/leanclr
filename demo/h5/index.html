@@ -1,202 +1,652 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>leanclr wasm loader</title>
-  <style>
-    body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; margin: 24px; background: #0b1021; color: #e7ecf2; }
-    h1 { font-size: 20px; margin-bottom: 8px; }
-    button { background: #2c9cf0; color: #fff; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
-    pre { background: #11172b; padding: 12px; border-radius: 8px; overflow: auto; max-height: 50vh; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeanCLR WASM Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .status-item {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ccc;
+        }
+
+        .status-item.loading {
+            border-left-color: #ffc107;
+        }
+
+        .status-item.success {
+            border-left-color: #28a745;
+        }
+
+        .status-item.error {
+            border-left-color: #dc3545;
+        }
+
+        .status-item-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .status-item-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #5a6268;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .console {
+            background: #1e1e1e;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #333;
+        }
+
+        .console-line {
+            padding: 2px 0;
+            line-height: 1.5;
+        }
+
+        .console-line.error {
+            color: #ff6b6b;
+        }
+
+        .console-line.warning {
+            color: #ffd93d;
+        }
+
+        .console-line.success {
+            color: #6bcf7f;
+        }
+
+        .console-line.info {
+            color: #4fc3f7;
+        }
+
+        .file-list {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-name {
+            flex: 1;
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .file-size {
+            font-size: 12px;
+            color: #999;
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .file-status {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+        }
+
+        .file-status.pending {
+            background: #ccc;
+        }
+
+        .file-status.loading {
+            background: #ffc107;
+        }
+
+        .file-status.success {
+            background: #28a745;
+        }
+
+        .file-status.error {
+            background: #dc3545;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>Load leanclr.wasm</h1>
-  <p>Served from the same directory as this page. Click the button to instantiate with console_log bound to browser console.</p>
-  <button id="load-btn">Load wasm</button>
-  <button id="run-test-btn" disabled>Run CoreTests::test.App::Main</button>
-  <pre id="log"></pre>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 LeanCLR WASM 测试</h1>
+            <p>WebAssembly 运行时测试界面</p>
+        </div>
 
-  <script type="module">
-    const logView = document.querySelector('#log');
-    const btn = document.querySelector('#load-btn');
-    const runTestBtn = document.querySelector('#run-test-btn');
-    let wasmInstance;
-    let memoryRef;
+        <div class="content">
+            <!-- 状态信息 -->
+            <div class="section">
+                <div class="section-title">📊 状态信息</div>
+                <div class="status-grid">
+                    <div class="status-item" id="status-modules">
+                        <div class="status-item-label">已加载模块</div>
+                        <div class="status-item-value" id="modules-count">0/6</div>
+                    </div>
+                    <div class="status-item" id="status-runtime">
+                        <div class="status-item-label">运行时状态</div>
+                        <div class="status-item-value" id="runtime-status">未初始化</div>
+                    </div>
+                    <div class="status-item" id="status-last-result">
+                        <div class="status-item-label">最后结果</div>
+                        <div class="status-item-value" id="last-result">-</div>
+                    </div>
+                </div>
+            </div>
 
-    const log = (msg) => {
-      console.log(msg);
-      logView.textContent += msg + "\n";
-    };
+            <!-- 程序集加载状态 -->
+            <div class="section">
+                <div class="section-title">📦 程序集加载状态</div>
+                <div class="file-list" id="file-list">
+                    <div style="text-align: center; color: #999; padding: 20px;">加载中...</div>
+                </div>
+            </div>
 
-    const imports = {
-      env: {
-        console_log: (ptr, len) => {
-          const mem = memoryRef;
-          if (!mem) {
-            log(`console_log called before memory set ptr=${ptr} len=${len}`);
-            return;
-          }
-          const view = new Uint16Array(mem.buffer, ptr, len);
-          let out = "";
-          for (let i = 0; i < view.length; i++) out += String.fromCharCode(view[i]);
-          log(out);
-        },
-        panic: (ptr, len) => {
-          const mem = memoryRef;
-          const view = new Uint8Array(mem.buffer, ptr, len);
-          const msg = new TextDecoder().decode(view);
-          const errMsg = `[PANIC] ${msg}`;
-          log(errMsg);
-          throw new Error(errMsg);
-        },
-        load_assembly_file: (namePtr, nameLen, outPtrPtr, outLenPtr) => {
-          const mem = memoryRef;
-          if (!mem) {
-            log(`load_assembly_file called before memory set`);
-            return -1;
-          }
-          const nameView = new Uint8Array(mem.buffer, namePtr, nameLen);
-          const dllName = new TextDecoder().decode(nameView);
-          
-          if (!window.dllData || !window.dllData[dllName]) {
-            log(`[ERROR] dll not found: ${dllName}`);
-            return -1;
-          }
-          
-          const dllBytes = window.dllData[dllName];
-          log(`[INFO] loading assembly: ${dllName} (${dllBytes.length} bytes)`);
-          
-          // 尝试在 wasm 中分配内存
-          let dataPtr = wasmInstance.exports.alloc(dllBytes.length);
-            if (dataPtr === 0) {
-                log(`[ERROR] failed to allocate memory for ${dllName}`);
-                return -1;
+            <!-- 控制按钮 -->
+            <div class="section">
+                <div class="section-title">⚙️ 控制</div>
+                <div class="button-group">
+                    <button class="btn-primary" id="btn-init" onclick="initRuntime()">
+                        <span id="init-spinner"></span>
+                        初始化运行时
+                    </button>
+                    <button class="btn-success" id="btn-run" onclick="runTest()" disabled>
+                        <span id="run-spinner"></span>
+                        运行 CoreTests.App::Main
+                    </button>
+                    <button class="btn-secondary" onclick="clearConsole()">
+                        清空日志
+                    </button>
+                </div>
+            </div>
+
+            <!-- 控制台输出 -->
+            <div class="section">
+                <div class="section-title">📝 控制台输出</div>
+                <div class="console" id="console"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载 WASM 模块 -->
+    <script src="lean.js"></script>
+
+    <script>
+        // ==================== 全局变量 ====================
+        let Module = null;
+        let assemblyCache = {};
+        let runtimeInitialized = false;
+
+        // ==================== 工具函数 ====================
+
+        function log(message, type = 'info') {
+            const console = document.getElementById('console');
+            const line = document.createElement('div');
+            line.className = `console-line ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            line.textContent = `[${timestamp}] ${message}`;
+            console.appendChild(line);
+            console.scrollTop = console.scrollHeight;
+        }
+
+        function clearConsole() {
+            document.getElementById('console').innerHTML = '';
+        }
+
+        function updateStatus(statusId, className, text) {
+            const item = document.getElementById(`status-${statusId}`);
+            if (item) {
+                item.className = `status-item ${className}`;
+                item.querySelector('.status-item-value').textContent = text;
             }
-          
-          // 将 dll 数据写入分配的内存
-          const dllMem = new Uint8Array(mem.buffer, dataPtr, dllBytes.length);
-          dllMem.set(dllBytes);
-          
-          // 写入输出参数：指针和长度
-          const outPtrView = new Uint32Array(mem.buffer, outPtrPtr, 1);
-          const outLenView = new Uint32Array(mem.buffer, outLenPtr, 1);
-          outPtrView[0] = dataPtr;
-          outLenView[0] = dllBytes.length;
-          
-          log(`[INFO] assembly ${dllName} loaded at 0x${dataPtr.toString(16)}, size: ${dllBytes.length}`);
-          return 0;
         }
-      }
-    };
 
-    let dllLoaded = false;
-
-    async function preloadDlls() {
-      const dlls = ['mscorlib', "System", "System.Core", "CoreTests"];
-      window.dllData = {};
-      
-      for (const dllName of dlls) {
-        const fileName = dllName + '.dll.bytes';
-        try {
-          log(`Preloading ${fileName}...`);
-          const resp = await fetch(`./${fileName}`);
-          if (!resp.ok) {
-            log(`[WARN] failed to fetch ${fileName}: ${resp.statusText}`);
-            continue;
-          }
-          const buffer = await resp.arrayBuffer();
-          window.dllData[dllName] = new Uint8Array(buffer);
-          log(`Loaded ${dllName}: ${buffer.byteLength} bytes`);
-        } catch (err) {
-          log(`[WARN] failed to preload ${fileName}: ${err}`);
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
         }
-      }
-      
-      dllLoaded = true;
-      return Object.keys(window.dllData).length > 0;
-    }
 
-    async function load() {
-      btn.disabled = true;
-      log('preloading dlls...');
-      const dllsReady = await preloadDlls();
-      if (!dllsReady) {
-        log('[WARN] no dlls were preloaded, continuing anyway...');
-      }
-      
-      log('fetching leanclr.wasm...');
-      const resp = await fetch('./leanclr.wasm');
-      const bytes = await resp.arrayBuffer();
-      log('instantiating wasm...');
-      const { instance } = await WebAssembly.instantiate(bytes, imports);
-      log('wasm instantiated, setting up...');
-      wasmInstance = instance;
-      memoryRef = instance.exports.memory;
-      log('wasm instantiated');
-      // invoke exported main if needed
-      if (instance.exports.main) {
-        log('calling wasm main');
-        instance.exports.main();
-      }
-      // Enable the test button after wasm is loaded
-      runTestBtn.disabled = false;
-    }
-
-    btn.addEventListener('click', () => {
-      load().catch(err => {
-        console.error(err);
-        log(`error: ${err}`);
-        btn.disabled = false;
-      });
-    });
-
-    runTestBtn.addEventListener('click', () => {
-      try {
-        log('Loading CoreTests assembly...');
-        // Allocate memory for the assembly name "CoreTests"
-        const assemblyName = 'CoreTests';
-        const nameBytes = new TextEncoder().encode(assemblyName);
-        const namePtr = wasmInstance.exports.alloc(nameBytes.length + 1);
-        const nameMem = new Uint8Array(memoryRef.buffer, namePtr, nameBytes.length + 1);
-        nameMem.set(nameBytes);
-        nameMem[nameBytes.length] = 0; // null terminate
-        
-        // Call load_assembly
-        const assemblyPtr = wasmInstance.exports.load_assembly(namePtr);
-        if (assemblyPtr === 0) {
-          log('[ERROR] Failed to load CoreTests assembly');
-          return;
+        // 从 WASM 内存中读取 C 字符串。直接使用 Module.HEAPU8，避免缓存 buffer 导致内存增长后失效。
+        function readCString(ptr) {
+            if (!Module || !Module.HEAPU8) {
+                log('错误：HEAPU8 未就绪', 'error');
+                return '';
+            }
+            const view = Module.HEAPU8;
+            let end = ptr;
+            while (view[end] !== 0) end++;
+            const bytes = view.slice(ptr, end);
+            return new TextDecoder('utf-8').decode(bytes);
         }
-        log(`[INFO] CoreTests assembly loaded at 0x${assemblyPtr.toString(16)}`);
-        
-        // Prepare class name "test.App"
-        const className = 'test.App';
-        const classBytes = new TextEncoder().encode(className);
-        const classPtr = wasmInstance.exports.alloc(classBytes.length + 1);
-        const classMem = new Uint8Array(memoryRef.buffer, classPtr, classBytes.length + 1);
-        classMem.set(classBytes);
-        classMem[classBytes.length] = 0; // null terminate
-        
-        // Prepare method name "Main"
-        const methodName = 'Main';
-        const methodBytes = new TextEncoder().encode(methodName);
-        const methodPtr = wasmInstance.exports.alloc(methodBytes.length + 1);
-        const methodMem = new Uint8Array(memoryRef.buffer, methodPtr, methodBytes.length + 1);
-        methodMem.set(methodBytes);
-        methodMem[methodBytes.length] = 0; // null terminate
-        
-        log('Invoking test.App::Main...');
-        // Call invoke_method
-        wasmInstance.exports.invoke_method(assemblyPtr, classPtr, methodPtr);
-        log('[INFO] test.App::Main invoked successfully');
-      } catch (err) {
-        console.error(err);
-        log(`[ERROR] ${err}`);
-      }
-    });
-  </script>
+
+        // ==================== 程序集加载逻辑 ====================
+
+        async function loadAllAssemblies() {
+            log('🔍 开始扫描程序集文件...', 'info');
+
+            const dllFiles = [
+                'mscorlib.dll.bytes',
+                'System.dll.bytes',
+                'System.Core.dll.bytes',
+                'CoreTests.dll.bytes'
+            ];
+
+            const fileList = document.getElementById('file-list');
+            fileList.innerHTML = '';
+
+            let loadedCount = 0;
+            const totalCount = dllFiles.length;
+
+            for (const filename of dllFiles) {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.id = `file-${filename}`;
+                fileItem.innerHTML = `
+                    <div class="file-status loading">⟳</div>
+                    <div class="file-name">${filename}</div>
+                    <div class="file-size">加载中...</div>
+                `;
+                fileList.appendChild(fileItem);
+
+                try {
+                    const response = await fetch(filename);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                    const buffer = await response.arrayBuffer();
+                    const assemblyName = filename.replace('.dll.bytes', '');
+                    assemblyCache[assemblyName] = new Uint8Array(buffer);
+
+                    const fileSize = formatFileSize(buffer.byteLength);
+                    const statusIcon = fileItem.querySelector('.file-status');
+                    statusIcon.className = 'file-status success';
+                    statusIcon.textContent = '✓';
+                    fileItem.querySelector('.file-size').textContent = fileSize;
+
+                    log(`✓ 已加载: ${filename} (${fileSize})`, 'success');
+                    loadedCount++;
+                } catch (error) {
+                    log(`✗ 加载失败: ${filename} - ${error.message}`, 'error');
+                    const statusIcon = fileItem.querySelector('.file-status');
+                    statusIcon.className = 'file-status error';
+                    statusIcon.textContent = '✗';
+                    fileItem.querySelector('.file-size').textContent = '加载失败';
+                }
+
+                document.getElementById('modules-count').textContent = `${loadedCount}/${totalCount}`;
+            }
+
+            log(`✅ 程序集加载完成: ${loadedCount}/${totalCount}`, 'success');
+            return loadedCount === totalCount;
+        }
+
+        // ==================== WASM 模块初始化 ====================
+
+        function initializeModule() {
+            return new Promise((resolve, reject) => {
+                const moduleConfig = {
+                    print: (text) => log(text, 'info'),     // redirect stdout (printf)
+                    printErr: (text) => log(text, 'error'), // redirect stderr
+                };
+
+                createStartupModule(moduleConfig).then((Module_) => {
+                    Module = Module_;
+                    log('✓ WASM 模块加载成功', 'success');
+
+                    // 不缓存 memory 引用，直接用 Module.HEAPU8，避免内存增长导致 buffer 失效
+                    if (!Module.HEAPU8) {
+                        log('⚠️  警告：未能获取 HEAPU8，运行时方法可能未正确导出', 'warning');
+                    }
+
+                    // 实现 load_assembly_file 回调
+                    Module.load_assembly_file = function(namePtr, bufPtr, sizePtr) {
+                        const assemblyName = readCString(namePtr);
+                        log(`📂 正在加载程序集: ${assemblyName}`, 'info');
+
+                        if (assemblyCache[assemblyName]) {
+                            const data = assemblyCache[assemblyName];
+                            try {
+                                // 在 WASM 内存中分配空间（使用 runtime allocate，内部调用 _malloc）
+                                const ptr = Module.allocate(data);
+
+                                // 将数据写入 WASM 内存（allocate 已写入，但为安全起见再 set 一次覆盖）
+                                Module.HEAPU8.set(data, ptr);
+
+                                // 设置输出参数
+                                Module.setValue(bufPtr, ptr, '*');
+                                Module.setValue(sizePtr, data.length, 'i32');
+
+                                log(`   ✓ 已加载 ${data.length} 字节`, 'success');
+                                return 0;
+                            } catch (error) {
+                                log(`   ✗ 加载失败: ${error.message}`, 'error');
+                                return 1;
+                            }
+                        } else {
+                            log(`   ✗ 程序集未找到: ${assemblyName}`, 'error');
+                            return 1;
+                        }
+                    };
+
+                    log('✓ load_assembly_file 回调已实现', 'success');
+                    resolve();
+                }).catch(reject);
+            });
+        }
+
+        // ==================== 运行时初始化 ====================
+
+        async function initRuntime() {
+            const btn = document.getElementById('btn-init');
+            btn.disabled = true;
+
+            const spinner = document.getElementById('init-spinner');
+            spinner.className = 'loading-spinner';
+
+            try {
+                log('🔧 开始初始化运行时...', 'info');
+                updateStatus('runtime', 'loading', '初始化中...');
+
+                const result = Module.ccall(
+                    'initialize_runtime',
+                    'number',
+                    [],
+                    []
+                );
+
+                if (result === 0) {
+                    log('✅ 运行时初始化成功！', 'success');
+                    updateStatus('runtime', 'success', '已初始化');
+                    document.getElementById('btn-run').disabled = false;
+                    runtimeInitialized = true;
+                } else {
+                    log(`❌ 运行时初始化失败，错误码: ${result}`, 'error');
+                    updateStatus('runtime', 'error', '初始化失败');
+                }
+            } catch (error) {
+                log(`❌ 初始化错误: ${error.message}`, 'error');
+                updateStatus('runtime', 'error', '初始化错误');
+            } finally {
+                spinner.className = '';
+                btn.disabled = false;
+            }
+        }
+
+        // ==================== 运行测试 ====================
+
+        async function runTest() {
+            if (!runtimeInitialized) {
+                log('❌ 运行时未初始化，请先点击「初始化运行时」按钮', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('btn-run');
+            btn.disabled = true;
+
+            const spinner = document.getElementById('run-spinner');
+            spinner.className = 'loading-spinner';
+
+            try {
+                log('▶️  准备运行 CoreTests.App::Main()...', 'info');
+                updateStatus('last-result', 'loading', '执行中...');
+
+                // 加载程序集
+                const load_assemby = Module.cwrap('load_assemby', 'number', ['string']);
+                log('📂 加载 CoreTests 程序集...', 'info');
+                const assemblyPtr = load_assemby('CoreTests');
+
+                if (assemblyPtr === 0) {
+                    log('❌ 程序集加载失败', 'error');
+                    updateStatus('last-result', 'error', '程序集加载失败');
+                    return;
+                }
+
+                log(`✓ 程序集已加载，指针: 0x${assemblyPtr.toString(16)}`, 'success');
+
+                // 执行方法
+                const invoke_method = Module.cwrap(
+                    'invoke_method',
+                    'number',
+                    ['number', 'string', 'string']
+                );
+
+                log('▶️  执行 test.App::Main()...', 'info');
+                const result = invoke_method(assemblyPtr, 'test.App', 'Main');
+
+                // 解析结果码
+                const resultMessages = {
+                    0: '✅ 方法执行成功！',
+                    1: '❌ 类型未找到',
+                    2: '❌ 方法未找到',
+                    3: '❌ 入口方法必须是静态的',
+                    4: '❌ 入口方法不能有参数',
+                    5: '❌ 入口方法不能是泛型的',
+                    6: '❌ 方法执行失败'
+                };
+
+                const resultMessage = resultMessages[result] || `未知错误码: ${result}`;
+                log(resultMessage, result === 0 ? 'success' : 'error');
+
+                const statusClass = result === 0 ? 'success' : 'error';
+                updateStatus('last-result', statusClass, `返回码: ${result}`);
+
+            } catch (error) {
+                log(`❌ 执行错误: ${error.message}`, 'error');
+                updateStatus('last-result', 'error', '执行错误');
+            } finally {
+                spinner.className = '';
+                btn.disabled = false;
+            }
+        }
+
+        // ==================== 初始化 ====================
+
+        async function initialize() {
+            log('🚀 开始初始化...', 'info');
+
+            try {
+                // 加载所有程序集
+                const allLoaded = await loadAllAssemblies();
+                if (!allLoaded) {
+                    log('⚠️  部分程序集加载失败，可能无法正常运行', 'warning');
+                }
+
+                // 初始化 WASM 模块
+                log('📥 加载 WASM 模块...', 'info');
+                await initializeModule();
+
+                log('✅ 初始化完成！', 'success');
+            } catch (error) {
+                log(`❌ 初始化失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 页面加载完成后启动初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            log('页面加载完成，开始初始化...');
+            initialize();
+        });
+    </script>
 </body>
 </html>
