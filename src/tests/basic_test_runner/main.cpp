@@ -128,6 +128,7 @@ static RtResultVoid transform_all_classes(metadata::RtAssembly* ass)
 
 static RtResultVoid run_bootstrap_tests(metadata::RtModuleDef* testMod)
 {
+    std::cout << "Running BootstrapTests..." << std::endl;
     {
         DECLARING_AND_UNWRAP_OR_RET_ERR_ON_FAIL(metadata::RtClass*, testClass, testMod->get_class_by_name("BootstrapTests.TestReturnValue", false, true));
         RET_ERR_ON_FAIL(vm::Class::initialize_all(testClass));
@@ -240,14 +241,20 @@ static metadata::RtClass* cls_unittest = nullptr;
 
 RtResultVoid init_unittest_class(metadata::RtModuleDef* mod)
 {
+    std::cout << "Initializing UnitTestAttribute class..." << std::endl;
     DECLARING_AND_UNWRAP_OR_RET_ERR_ON_FAIL(metadata::RtClass*, klass, mod->get_class_by_name("UnitTestAttribute", false, true));
     RET_ERR_ON_FAIL(vm::Class::initialize_all(klass));
     cls_unittest = klass;
     RET_VOID_OK();
 }
 
+static size_t g_failed_test_methods = 0;
+static size_t g_passed_test_methods = 0;
+static size_t g_skipped_test_methods = 0;
+
 RtResultVoid run_tests(metadata::RtModuleDef* mod)
 {
+    std::cout << "Running UnitTests of: " << mod->get_name_no_ext() << std::endl;
     auto& cli_image = mod->get_cli_image();
     int method_index = 0;
     int skip_count = 0;
@@ -273,13 +280,31 @@ RtResultVoid run_tests(metadata::RtModuleDef* mod)
             method_index++;
             if (method_index < skip_count)
             {
+                ++g_skipped_test_methods;
                 // std::cout << "  Skipping..." << std::endl;
                 continue;
             }
-            std::cout << ">>>>>>>>>>" << method_index << " run method : " << klass->namespaze << "." << klass->name << "::" << method->name
-                      << " token: " << method->token << std::endl;
-            DECLARING_AND_UNWRAP_OR_RET_ERR_ON_FAIL(vm::RtObject*, test_obj, vm::Object::new_object(klass));
-            RET_ERR_ON_FAIL(vm::Runtime::invoke_with_run_cctor(method, test_obj, nullptr));
+            auto ret1 = vm::Object::new_object(klass);
+            if (ret1.is_err())
+            {
+                std::cout << "  Failed to create test object, error: " << method_index << " run unittest : " << klass->namespaze << "." << klass->name
+                          << "::" << method->name << " token: " << method->token << std::endl;
+                RET_ERR(ret1.unwrap_err());
+            }
+            vm::RtObject* test_obj = ret1.unwrap();
+            auto ret2 = vm::Runtime::invoke_with_run_cctor(method, test_obj, nullptr);
+            if (ret2.is_err())
+            {
+                std::cout << "  Failed to run unittest, error: " << static_cast<int>(ret2.unwrap_err()) << " " << method_index
+                          << " run unittest : " << klass->namespaze << "." << klass->name << "::" << method->name << " token: " << method->token << std::endl;
+                ++g_failed_test_methods;
+            }
+            else
+            {
+                // std::cout << "  Passed unittest: " << method_index << " run unittest : " << klass->namespaze << "." << klass->name << "::" << method->name
+                //           << " token: " << method->token << std::endl;
+                ++g_passed_test_methods;
+            }
         }
     }
     RET_VOID_OK();
@@ -308,11 +333,11 @@ int main()
         return -1;
     }
 
-    bool is_run_all = false;
+    bool is_run_all = true;
     bool is_run_bootstrap_tests = is_run_all || false;
-    bool is_run_core_tests = is_run_all || true;
+    bool is_run_core_tests = is_run_all || false;
     bool is_load_corlib_customattributes = is_run_all || false;
-    bool is_run_corlib_tests = is_run_all || true;
+    bool is_run_corlib_tests = is_run_all || false;
 
     auto corlib = vm::Assembly::get_corlib();
     std::cout << "Corlib assembly loaded successfully." << corlib << std::endl;
@@ -430,7 +455,12 @@ int main()
         }
     }
 
-    std::cout << "ok" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Total test methods: " << (g_passed_test_methods + g_failed_test_methods + g_skipped_test_methods) << std::endl;
+    std::cout << "  Passed: " << g_passed_test_methods << std::endl;
+    std::cout << "  Failed: " << g_failed_test_methods << std::endl;
+    std::cout << "  Skipped: " << g_skipped_test_methods << std::endl;
+    std::cout << "" << std::endl;
 
     return 0;
 }
