@@ -1,0 +1,27 @@
+#pragma once
+
+#include "rt_metadata.h"
+
+namespace leanclr::vm
+{
+class ArrayClass
+{
+  public:
+    // Static initializer
+    static RtResultVoid initialize();
+
+    // Array class creation functions
+    static RtResult<metadata::RtClass*> get_array_class_from_element_type(const metadata::RtTypeSig* ele_type, uint8_t rank);
+    static RtResult<metadata::RtClass*> get_array_class_from_element_klass(metadata::RtClass* ele_klass, uint8_t rank);
+    static RtResult<metadata::RtClass*> get_szarray_class_from_element_typesig(const metadata::RtTypeSig* ele_type);
+    static RtResult<metadata::RtClass*> get_szarray_class_from_element_class(metadata::RtClass* ele_class);
+
+    // Setup functions
+    static RtResultVoid setup_interfaces(metadata::RtClass* klass);
+    static RtResultVoid setup_methods(metadata::RtClass* klass);
+    static RtResultVoid setup_vtables(metadata::RtClass* klass);
+
+    // Interface method initialization
+    static RtResultVoid initialize_array_interface_methods();
+};
+} // namespace leanclr::vm

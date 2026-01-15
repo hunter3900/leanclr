@@ -416,3 +416,8 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+/**/build/
+!docs/build/
+/**/build-*/
+/**/CMakeFiles/
+___*

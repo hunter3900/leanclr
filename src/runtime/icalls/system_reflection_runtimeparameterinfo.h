@@ -1,0 +1,17 @@
+#pragma once
+
+#include "icall_base.h"
+
+namespace leanclr::icalls
+{
+
+class SystemReflectionRuntimeParameterInfo
+{
+  public:
+    static utils::Span<vm::InternalCallEntry> get_internal_call_entries();
+
+    static RtResult<int32_t> get_metadata_token(const vm::RtReflectionParameter* param);
+    static RtResult<vm::RtArray*> get_type_modifiers(vm::RtReflectionType* parameter_type, vm::RtObject* member, int32_t index, bool optional);
+};
+
+} // namespace leanclr::icalls

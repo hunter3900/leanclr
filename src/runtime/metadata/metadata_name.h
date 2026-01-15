@@ -1,0 +1,20 @@
+#pragma once
+
+#include "rt_metadata.h"
+#include "../utils/string_builder.h"
+
+namespace leanclr::metadata
+{
+class MetadataName
+{
+  public:
+    static RtResultVoid append_klass_full_name(utils::StringBuilder& sb, RtClass* klass);
+    static RtResultVoid append_type_sig_name(utils::StringBuilder& sb, const RtTypeSig* type_sig);
+    static RtResultVoid append_method_full_name_with_params(utils::StringBuilder& sb, const RtMethodInfo* method);
+    static RtResultVoid append_method_full_name_without_params(utils::StringBuilder& sb, const RtMethodInfo* method);
+
+    // static RtResult<const char*> build_class_full_name(const RtClass* klass);
+    // static RtResult<const char*> build_method_full_name_with_params(const RtMethodInfo* method);
+    // static RtResult<const char*> build_method_full_name_without_params(const RtMethodInfo* method);
+};
+} // namespace leanclr::metadata
