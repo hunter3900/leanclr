@@ -14,6 +14,9 @@
 #include "vm/runtime.h"
 #include "vm/settings.h"
 #include "vm/type.h"
+#include "vm/rt_exception.h"
+#include "vm/property.h"
+#include "vm/field.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -188,6 +191,45 @@ static int run(const std::string& dll_name, const std::vector<std::string>& dll_
     if (invoke_result.is_err())
     {
         std::cerr << "Failed to invoke entry method, error: " << static_cast<int>(invoke_result.unwrap_err()) << std::endl;
+        vm::RtException* ex = vm::Exception::raise_error_as_exception(invoke_result.unwrap_err(), nullptr, nullptr);
+        if (!ex)
+        {
+            std::cerr << "Failed to raise exception for invocation error" << std::endl;
+            return -1;
+        }
+
+
+        const metadata::RtPropertyInfo* prop = vm::Class::get_property_for_name(ex->klass, "StackTrace", true);
+        assert(prop);
+        auto ret = vm::Runtime::invoke_with_run_cctor(prop->get_method, ex, nullptr);
+        if (ret.is_err())
+        {
+            std::cerr << "Failed to get exception stack trace" << std::endl;
+            return -1;
+        }
+
+        std::cerr << std::endl;
+        std::cerr << std::endl;
+        {
+            utils::StringBuilder sb;
+            vm::RtString* message = ex->message;
+            if (message)
+            {
+                sb.append_utf16_str(&message->first_char, message->length);
+            }
+            else
+            {
+                sb.sure_null_terminator_but_not_append();
+            }
+            std::cerr << "Exception message: " << sb.as_cstr() << std::endl;
+        }
+        {
+            vm::RtString* stack_trace_str = reinterpret_cast<vm::RtString*>(ret.unwrap());
+            utils::StringBuilder sb;
+            sb.append_utf16_str(&stack_trace_str->first_char, stack_trace_str->length);
+            std::cerr << sb.as_cstr() << std::endl;
+        }
+
         return -1;
     }
 
