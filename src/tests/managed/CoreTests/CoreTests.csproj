@@ -11,7 +11,7 @@
     <OutputPath>bin\Debug\</OutputPath>
     <ProjectGuid>{A098E4A9-8B0E-4612-A75E-0AE2061E70FF}</ProjectGuid>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+  <PropertyGroup>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
