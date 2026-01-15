@@ -26,3 +26,9 @@ typedef int8_t sbyte;
 #define ENABLE_TEST_INTRINSICS 1
 #define ENABLE_TEST_INTERNAL_CALLS 1
 #endif
+
+#if !NDEBUG
+#ifndef ENABLE_FRAME_TRACE
+#define ENABLE_FRAME_TRACE 1
+#endif
+#endif
