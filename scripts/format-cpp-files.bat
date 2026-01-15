@@ -6,8 +6,8 @@ echo Formatting all C++ files in src/
 echo ====================================
 echo.
 
-set CLANG_FORMAT=".\tools\clang-format\clang-format.exe"
-set SRC_DIR=%~dp0src
+set CLANG_FORMAT="..\tools\clang-format\clang-format.exe"
+set SRC_DIR=%~dp0..\src
 
 if not exist %CLANG_FORMAT% (
     echo Error: clang-format.exe not found at %CLANG_FORMAT%
