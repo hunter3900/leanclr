@@ -14,6 +14,7 @@ class SystemString
 
     // Returns the length of the string (number of UTF-16 code units).
     static RtResult<int32_t> get_length(vm::RtString* s);
+    static RtResult<int32_t> get_hash_code(vm::RtString* str);
 
     static utils::Span<vm::IntrinsicEntry> get_intrinsic_entries();
 };

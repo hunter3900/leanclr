@@ -20,6 +20,12 @@ RtResult<int32_t> SystemString::get_length(vm::RtString* s)
     RET_OK(vm::String::get_length(s));
 }
 
+RtResult<int32_t> SystemString::get_hash_code(vm::RtString* str)
+{
+    int32_t hash = str ? vm::String::get_hash_code(str) : 0;
+    RET_OK(hash);
+}
+
 /// @intrinsic: System.String::get_Chars
 RtResultVoid get_chars_invoker(metadata::RtManagedMethodPointer methodPtr, const metadata::RtMethodInfo* method, const interp::RtStackObject* params,
                                interp::RtStackObject* ret)
@@ -43,10 +49,23 @@ RtResultVoid get_length_invoker(metadata::RtManagedMethodPointer methodPtr, cons
     RET_VOID_OK();
 }
 
+/// @intrinsic: System.String::GetHashCode()
+static RtResultVoid get_hash_code_invoker(metadata::RtManagedMethodPointer methodPtr, const metadata::RtMethodInfo* method, const interp::RtStackObject* params,
+                                          interp::RtStackObject* ret)
+{
+    auto str = interp::EvalStackOp::get_param<vm::RtString*>(params, 0);
+    DECLARING_AND_UNWRAP_OR_RET_ERR_ON_FAIL(int32_t, hash, SystemString::get_hash_code(str));
+    interp::EvalStackOp::set_return(ret, hash);
+    RET_VOID_OK();
+}
+
 // Intrinsic registry
 static vm::IntrinsicEntry s_intrinsic_entries[] = {
     {"System.String::get_Chars", (vm::IntrinsicFunction)&SystemString::get_chars, get_chars_invoker},
     {"System.String::get_Length", (vm::IntrinsicFunction)&SystemString::get_length, get_length_invoker},
+    {"System.String::GetHashCode", (vm::IntrinsicFunction)&SystemString::get_hash_code, get_hash_code_invoker},
+    // redirected to intrinsic
+    {"System.String::GetLegacyNonRandomizedHashCode", (vm::IntrinsicFunction)&SystemString::get_hash_code, get_hash_code_invoker},
 };
 
 utils::Span<vm::IntrinsicEntry> SystemString::get_intrinsic_entries()

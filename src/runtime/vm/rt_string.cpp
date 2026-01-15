@@ -153,7 +153,9 @@ int32_t String::get_hash_code(RtString* str)
 
 RtString* String::fast_allocate_string(int32_t length)
 {
-    // String::GetLegacyNonRandomizedHashCode need zero terminated string, so we allocate one extra character
+    // String::GetLegacyNonRandomizedHashCode need zero terminated string, so we allocate one extra character.
+    // TODO: can we optimize it out? we have redirected String::GetHashCode and String::GetLegacyNonRandomizedHashCode to
+    // the intrinsic implementation which does not require zero-termination.
     RtString* newString = (RtString*)gc::GarbageCollector::allocate_object_not_contains_references(
         g_stringClass, sizeof(RtString) - OVER_SIZE_OF_STRING + sizeof(uint16_t) /* extra one character*/ + length * sizeof(uint16_t));
     newString->length = static_cast<int32_t>(length);
