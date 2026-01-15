@@ -1,0 +1,35 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <AssemblyName>ILTests</AssemblyName>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <ProjectGuid>{8BF44FE7-FAD8-4796-DFA8-45CB512CA4CD}</ProjectGuid>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>ILTests</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ILFile Include="*.il" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Target Name="Build">
+    <Exec Command="$(ILAsm_W64Bin)ilasm.exe /dll /output:$(OutputPath)$(AssemblyName).dll @(ILFile, ' ')" />
+  </Target>
+  <Target Name="Clean">
+    <Delete Files="$(OutputPath)$(AssemblyName).dll" />
+  </Target>
+  <Import Project="..\packages\ILAsm.9.4.0\build\net\ILAsm.targets" Condition="Exists('..\packages\ILAsm.9.4.0\build\net\ILAsm.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\ILAsm.9.4.0\build\net\ILAsm.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILAsm.9.4.0\build\net\ILAsm.targets'))" />
+  </Target>
+</Project>

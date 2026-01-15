@@ -1,0 +1,108 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Threading.Tasks.Sources;
+
+namespace CorlibTests.InternalCall
+{
+    internal class TC_System_Reflection_FieldInfo : GeneralTestCaseBase
+    {
+        public class A
+        {
+            public int value;
+            public long value2;
+
+            public const int constValue = 10;
+
+            public A()
+            {
+                value = 1;
+                value2 = 2;
+            }
+
+            public int GetValue()
+            {
+                return value;
+            }
+        }
+
+        [UnitTest]
+        public void FieldInfo_Name_ok()
+        {
+            var fieldInfo = typeof(A).GetField("value");
+            Assert.NotNull(fieldInfo);
+            Assert.Equal("value", fieldInfo.Name);
+        }
+
+        [UnitTest]
+        public void ResolveType()
+        {
+            var fieldInfo = typeof(A).GetField("value");
+            Assert.NotNull(fieldInfo);
+            Assert.Equal(typeof(int), fieldInfo.FieldType);
+        }
+
+        [UnitTest]
+        public void GetParentType()
+        {
+            var fieldInfo = typeof(A).GetField("value");
+            var parentType = fieldInfo.DeclaringType;
+            Assert.NotNull(parentType);
+            Assert.Equal(typeof(A), parentType);
+        }
+
+        [UnitTest]
+        public void GetValue()
+        {
+            var a = new A() { value = 2 };
+            var f = typeof(A).GetField("value");
+            object v = f.GetValue(a);
+            Assert.Equal(2, v);
+        }
+
+        [UnitTest]
+        public void SetValue()
+        {
+            var a = new A();
+            var f = typeof(A).GetField("value");
+            f.SetValue(a, 3);
+            Assert.Equal(3, a.value);
+        }
+
+        [UnitTest]
+        public void GetRawConstantValue()
+        {
+            var f = typeof(A).GetField("constValue");
+            object v = f.GetRawConstantValue();
+            Assert.Equal(10, v);
+        }
+
+        [UnitTest]
+        public void GetMetadataToken()
+        {
+            var f = typeof(A).GetField("value");
+            int token = f.MetadataToken;
+            Assert.True(token != 0);
+        }
+
+        [UnitTest]
+        public void GetTypeModifiers()
+        {
+            var f = typeof(A).GetField("value");
+            var modifiers = f.GetOptionalCustomModifiers();
+            Assert.Equal(0, modifiers.Length);
+            modifiers = f.GetRequiredCustomModifiers();
+            Assert.Equal(0, modifiers.Length);
+        }
+
+        [UnitTest]
+        public void GetFieldOffset()
+        {
+            var f = typeof(A).GetField("value2");
+            int offset = System.Runtime.InteropServices.Marshal.OffsetOf(typeof(A), "value2").ToInt32();
+            Assert.Equal(8, offset);
+        }
+    }
+}
