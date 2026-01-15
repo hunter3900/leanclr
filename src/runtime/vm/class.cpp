@@ -17,6 +17,7 @@
 #include "layout.h"
 #include "method.h"
 #include "shim.h"
+#include "customattribute.h"
 
 namespace leanclr::vm
 {
@@ -543,9 +544,7 @@ bool Class::is_explicit_layout(metadata::RtClass* klass)
 
 RtResult<bool> Class::is_by_ref_like(metadata::RtClass* klass)
 {
-    // let byreflike_attr = CORLIB_TYPES.cls_byreflike;
-    // super::customattribute::has_customattribute_on_class(self, byreflike_attr)
-    RET_ERR(RtErr::NotImplemented);
+    return CustomAttribute::has_customattribute_on_class(klass, g_corlibTypes.cls_byreflike);
 }
 
 static bool is_enum_type_internal(metadata::RtClass* klass)
