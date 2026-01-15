@@ -75,7 +75,8 @@ RtResult<vm::RtReflectionRuntimeType*> SystemRuntimeTypeHandle::get_element_type
     vm::RtReflectionType* ref_type = nullptr;
     if (type_sig->is_by_ref())
     {
-        DECLARING_AND_UNWRAP_OR_RET_ERR_ON_FAIL(vm::RtReflectionType*, temp_ref_type, vm::Reflection::get_type_reflection_object(type_sig));
+        DECLARING_AND_UNWRAP_OR_RET_ERR_ON_FAIL(metadata::RtClass*, klass, vm::Class::get_class_from_typesig(type_sig));
+        DECLARING_AND_UNWRAP_OR_RET_ERR_ON_FAIL(vm::RtReflectionType*, temp_ref_type, vm::Reflection::get_type_reflection_object(klass->by_val));
         ref_type = temp_ref_type;
     }
     else
