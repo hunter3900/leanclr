@@ -23,12 +23,6 @@ using namespace leanclr;
 // Define load_assembly_file using EM_JS so JavaScript can implement it
 #ifdef EMSCRIPTEN
 EM_JS(int32_t, load_assembly_file, (const char* assembly_name, byte** out_buf, size_t* out_size), {
-    // This is a wrapper that JavaScript will override
-    // The actual implementation is provided by Module.load_assembly_file
-    if (typeof Module.load_assembly_file == = 'function')
-    {
-        return Module.load_assembly_file(assembly_name, out_buf, out_size);
-    }
     console.error('load_assembly_file not implemented');
     return 1;
 });

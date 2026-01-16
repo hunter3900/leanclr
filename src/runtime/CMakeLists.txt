@@ -9,10 +9,10 @@ set(RUNTIME_DIRS
     interp
     intrinsics
     metadata
-    os
+    misc
+    platform
     utils
     vm
-    misc
 )
 
 set(RUNTIME_SOURCES)
