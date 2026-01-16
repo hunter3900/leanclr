@@ -138,6 +138,9 @@ class MemPool
 
     std::uint8_t* calloc(std::size_t count, std::size_t size, size_t alignment = ALIGNMENT)
     {
+        assert(alignment && (alignment & (alignment - 1)) == 0 && "Alignment must be a power of two");
+        assert(size % alignment == 0 && "Size must be multiple of alignment");
+        assert(count == 0 || (count <= SIZE_MAX / size) && "Size overflow in calloc");
         const std::size_t total = count * size;
         return malloc_zeroed(total, alignment);
     }

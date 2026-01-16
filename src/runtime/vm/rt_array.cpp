@@ -386,7 +386,7 @@ RtResultVoid Array::szarray_get_invoker(metadata::RtManagedMethodPointer method_
     const void* data_ptr = get_array_element_address_as_ptr_void(arr, index);
     metadata::RtClass* ele_class = get_array_element_class(arr);
 
-    Object::extends_to_i32_on_stack(data_ptr, ret, ele_class);
+    Object::extends_to_eval_stack(data_ptr, ret, ele_class);
 
     RET_VOID_OK();
 }
@@ -474,7 +474,7 @@ RtResultVoid Array::mdarray_get_invoker(metadata::RtManagedMethodPointer method_
     const void* data_ptr = get_array_element_address_as_ptr_void(arr, index);
     metadata::RtClass* ele_class = get_array_element_class(arr);
 
-    Object::extends_to_i32_on_stack(data_ptr, ret, ele_class);
+    Object::extends_to_eval_stack(data_ptr, ret, ele_class);
 
     RET_VOID_OK();
 }

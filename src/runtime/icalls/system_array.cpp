@@ -39,8 +39,8 @@ static RtResultVoid get_length_invoker(metadata::RtManagedMethodPointer, const m
                                        interp::RtStackObject* ret)
 {
     auto arr = EvalStackOp::get_param<vm::RtArray*>(params, 0);
-    int32_t dimension = EvalStackOp::get_param<int32_t>(params, 1);
-    DECLARING_AND_UNWRAP_OR_RET_ERR_ON_FAIL(int32_t, length, SystemArray::get_length(arr, static_cast<size_t>(dimension)));
+    size_t dimension = EvalStackOp::get_param<size_t>(params, 1);
+    DECLARING_AND_UNWRAP_OR_RET_ERR_ON_FAIL(int32_t, length, SystemArray::get_length(arr, dimension));
     EvalStackOp::set_return(ret, length);
     RET_VOID_OK();
 }

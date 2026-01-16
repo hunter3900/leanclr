@@ -81,8 +81,7 @@ const void* Object::get_boxed_enum_data_ptr(const RtObject* obj)
     return reinterpret_cast<const uint8_t*>(obj) + sizeof(RtObject);
 }
 
-// Extend small integer types to i32 on stack
-void Object::extends_to_i32_on_stack(const void* src, void* dst, metadata::RtClass* ele_klass)
+void Object::extends_to_eval_stack(const void* src, interp::RtStackObject* dst, metadata::RtClass* ele_klass)
 {
     assert(src && dst && ele_klass);
 
@@ -205,7 +204,7 @@ RtResultVoid Object::unbox_any(const RtObject* obj, metadata::RtClass* klass, vo
 
         if (extend_to_stack)
         {
-            extends_to_i32_on_stack(src, dst, unbox_cast_klass);
+            extends_to_eval_stack(src, reinterpret_cast<interp::RtStackObject*>(dst), unbox_cast_klass);
         }
         else
         {

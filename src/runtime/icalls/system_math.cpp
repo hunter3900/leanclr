@@ -24,7 +24,7 @@ static RtResultVoid round_invoker(metadata::RtManagedMethodPointer methodPtr, co
 
 RtResult<float> SystemMath::abs_f32(float value)
 {
-    RET_OK(static_cast<float>(std::fabs(static_cast<double>(value))));
+    RET_OK(static_cast<float>(std::fabs(value)));
 }
 
 /// @icall: System.Math::Abs(System.Single)

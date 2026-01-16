@@ -42,7 +42,7 @@ RtResult<vm::RtString*> SystemString::newobj_char_array_range(vm::RtArray* charA
     assert(eleClass->by_val->ele_type == metadata::RtElementType::Char);
 
     uint32_t arr_length = static_cast<uint32_t>(vm::Array::get_array_length(charArray));
-    if (length < 0 || static_cast<uint32_t>(startIndex) >= arr_length || static_cast<uint32_t>(startIndex + length) > arr_length)
+    if (length < 0 || static_cast<uint32_t>(startIndex) > arr_length || static_cast<uint32_t>(length) > arr_length - startIndex)
         RET_ERR(RtErr::IndexOutOfRange);
 
     const uint16_t* chars_start = vm::Array::get_array_data_start_as<uint16_t>(charArray) + static_cast<size_t>(startIndex);

@@ -35,7 +35,7 @@ class Object
     static RtResult<RtObject*> clone(RtObject* obj);
 
     // Extend small integer to i32 on stack
-    static void extends_to_i32_on_stack(const void* src, void* dst, metadata::RtClass* ele_klass);
+    static void extends_to_eval_stack(const void* src, interp::RtStackObject* dst, metadata::RtClass* ele_klass);
 };
 
 } // namespace leanclr::vm
