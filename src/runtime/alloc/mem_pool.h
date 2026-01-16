@@ -1,15 +1,16 @@
 #pragma once
 
-#include "../alloc/general_allocation.h"
-#include "mem_op.h"
-
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
 
-namespace leanclr::utils
+#include "general_allocation.h"
+#include "../utils/mem_op.h"
+
+
+namespace leanclr::alloc
 {
 class MemPool
 {
@@ -32,7 +33,7 @@ class MemPool
 
     static std::size_t align_up(std::size_t value, std::size_t alignment)
     {
-        return MemOp::align_up(value, alignment);
+        return utils::MemOp::align_up(value, alignment);
     }
 
     Region* create_region(std::size_t capacity)

@@ -18,24 +18,28 @@ class Result
 #endif
 
   public:
-    Result(const T& value) : data(value)
+    Result(const T& value) noexcept: data(value)
     {
     }
-    Result(T&& value) : data(std::move(value))
-    {
-    }
-
-    Result(const E& error) : data(error)
+    Result(T&& value) noexcept: data(std::move(value))
     {
     }
 
-    Result(E&& error) : data(std::move(error))
+    Result(const E& error) noexcept: data(error)
     {
     }
 
-    Result(const Result<T, E>&& other) : data(std::move(other.data))
+    Result(E&& error) noexcept: data(std::move(error))
+    {
+    }
+
+    Result(const Result<T, E>& other) = delete;
+    Result<T, E>& operator = (const Result<T, E>& other) = delete;
+
+    Result(Result<T, E>&& other) noexcept: data(std::move(other.data))
     {
 #ifndef NDEBUG
+        checked = other.checked;
         other.checked = true;
 #endif // !NDEBUG
     }
@@ -92,7 +96,7 @@ class Result
     }
 
     template <typename F>
-    Result<T, F> map_err(F f)
+    auto map_err(F f) -> Result<T, decltype(f(std::declval<E>()))>
     {
         return is_err() ? Result<T, F>::Err(f(unwrap_err())) : Result<T, F>::Ok(unwrap());
     }
@@ -103,6 +107,14 @@ class Result
         if (is_ok())
             return Result(f(unwrap()));
         return Result(unwrap_err());
+    }
+
+    template <typename U>
+    Result<U, E> cast()
+    {
+        if (is_ok())
+            return Result<U, E>::Ok((U)(unwrap()));
+        return Result<U, E>::Err(unwrap_err());
     }
 };
 

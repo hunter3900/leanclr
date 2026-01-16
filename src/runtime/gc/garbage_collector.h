@@ -27,6 +27,7 @@ class GarbageCollector
     static vm::RtObject* allocate_array(metadata::RtClass* arrClass, size_t totalBytes);
     static void write_barrier(vm::RtObject** obj_ref_location, vm::RtObject* new_obj)
     {
+        // TODO: implement write barrier
         *obj_ref_location = new_obj;
     }
 };

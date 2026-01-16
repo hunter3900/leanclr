@@ -24,12 +24,7 @@ class GeneralAllocation
 
     static void* malloc_zeroed(size_t size)
     {
-        void* ptr = std::malloc(size);
-        if (ptr)
-        {
-            std::memset(ptr, 0, size);
-        }
-        return ptr;
+        return std::calloc(1, size);
     }
 
     template <typename T>
