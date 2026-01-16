@@ -119,7 +119,7 @@ LeanCLR provides two editions to meet different scenario requirements:
 |--------|--------|-------------|
 | **Metadata Parsing** | ✅ Complete | Full support for PE/COFF format and CLI metadata tables |
 | **Type System** | ✅ Complete | Classes, interfaces, generics, arrays, value types, etc. |
-| **IL Interpreter** | ✅ Complete | Covers almost all ECMA-335 IL instructions |
+| **IL Interpreter** | 🔶 In Development | Covers almost all ECMA-335 IL instructions |
 | **IR Interpreter** | ✅ Complete | Optimized execution for hot functions |
 | **Exception Handling** | ✅ Complete | try/catch/finally, nested exceptions, etc. |
 | **Reflection** | ✅ Complete | Type, MethodInfo, FieldInfo, and other core APIs |
@@ -127,7 +127,7 @@ LeanCLR provides two editions to meet different scenario requirements:
 | **Internal Calls** | 🔶 In Progress | Core icalls implemented, platform icalls being added |
 | **Garbage Collection** | 🔶 In Development | Basic framework ready |
 | **AOT Compiler** | 📋 Planned | IL → C++ transpilation |
-| **P/Invoke** | 📋 Planned | Native interop support |
+| **P/Invoke** | � Partial | Manual registration supported, automation depends on AOT compiler |
 | **Multi-Threading** | 📋 Planned | Threads, synchronization primitives, etc. |
 
 ### ECMA-335 Compatibility
@@ -142,7 +142,7 @@ LeanCLR provides two editions to meet different scenario requirements:
 
 - Complete garbage collector implementation
 - Implement AOT compiler (IL → C++)
-- Support P/Invoke native interop
+- Complete P/Invoke automation support (depends on AOT compiler)
 - Support CoreCLR extension features
 - Provide more complete examples and documentation
 
@@ -158,6 +158,8 @@ LeanCLR provides two editions to meet different scenario requirements:
 
 ## Project Structure
 
+For detailed project structure documentation, see [Project Structure](./docs/project_structure.md).
+
 ```
 leanclr/
 ├── src/
@@ -166,41 +168,9 @@ leanclr/
 │   ├── tools/        # Command-line tools
 │   ├── samples/      # Sample projects
 │   └── tests/        # Unit tests
-├── demo/             # Demo examples
+├── docs/             # Documentation
 └── tools/            # Build utilities
 ```
-
-### runtime (Runtime Core)
-
-Directory: `src/runtime`
-
-Core implementation of the LeanCLR runtime, including:
-
-- **metadata** - ECMA-335 metadata parsing and representation
-- **vm** - Virtual machine core (type system, method invocation, runtime state management)
-- **interp** - IL interpreter and IR interpreter implementation
-- **gc** - Garbage collector (in development)
-- **icalls** - Internal calls implementation
-- **alloc** - Memory allocators (metadata allocation, managed object allocation)
-
-### libraries (Base Class Libraries)
-
-Directory: `src/libraries`
-
-Contains .NET Framework base class libraries required by the runtime (mscorlib, System, System.Core, etc.).
-
-### tools (Command-Line Tools)
-
-Directory: `src/tools`
-
-- **lean** - Command-line tool with embedded LeanCLR, can directly load and run .NET assemblies
-
-### samples (Sample Projects)
-
-Directory: `src/samples`
-
-- **startup** - Win64 native platform sample project
-- **lean-wasm** - WebAssembly platform sample project
 
 ## Documentation
 
@@ -236,19 +206,12 @@ For more details, see [Build Documentation](./docs/build/build_runtime.md).
 
 ## Demo
 
-Two platform demos are provided for quickly experiencing LeanCLR's capabilities.
+Repository [leanclr-demo](https://github.com/focus-creative-games/leanclr-demo) provides two platform demos for quickly experiencing LeanCLR's capabilities:
 
-### Win64
-
-Directory: [demo/win64](./demo/win64)
-
-Run `run.bat` to execute the demo. See [demo/win64/README.md](./demo/win64/README.md) for details.
-
-### HTML5
-
-Directory: [demo/h5](./demo/h5)
-
-Access `index.html` through an HTTP server to run the demo in a browser. See [demo/h5/README.md](./demo/h5/README.md) for details.
+| Demo | Description |
+|------|-------------|
+| **win64** | Windows x64 platform demo, run `run.bat` to execute |
+| **h5** | WebAssembly browser demo, access `index.html` through an HTTP server |
 
 ## Contact
 

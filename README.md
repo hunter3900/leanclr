@@ -119,7 +119,7 @@ LeanCLR 提供两个版本，以满足不同场景的需求：
 |------|------|------|
 | **元数据解析** | ✅ 完成 | 完整支持 PE/COFF 格式和 CLI 元数据表 |
 | **类型系统** | ✅ 完成 | 类、接口、泛型、数组、值类型等 |
-| **IL 解释器** | ✅ 完成 | 覆盖几乎所有 ECMA-335 IL 指令 |
+| **IL 解释器** | 🔶 开发中 | 覆盖几乎所有 ECMA-335 IL 指令 |
 | **IR 解释器** | ✅ 完成 | 热点函数优化执行 |
 | **异常处理** | ✅ 完成 | try/catch/finally、嵌套异常等 |
 | **反射** | ✅ 完成 | Type、MethodInfo、FieldInfo 等核心 API |
@@ -127,7 +127,7 @@ LeanCLR 提供两个版本，以满足不同场景的需求：
 | **内部调用** | 🔶 进行中 | 核心 icall 已实现，平台相关 icall 持续补充 |
 | **垃圾回收** | 🔶 开发中 | 基础框架已就绪 |
 | **AOT 编译器** | 📋 规划中 | IL → C++ 转译 |
-| **P/Invoke** | 📋 规划中 | 本机互操作支持 |
+| **P/Invoke** | � 部分完成 | 已支持手动注册，自动化支持依赖 AOT 编译器 |
 | **多线程** | 📋 规划中 | 线程、同步原语等 |
 
 ### ECMA-335 兼容性
@@ -142,7 +142,7 @@ LeanCLR 提供两个版本，以满足不同场景的需求：
 
 - 完善垃圾回收器实现
 - 实现 AOT 编译器（IL → C++）
-- 支持 P/Invoke 本机互操作
+- 完善 P/Invoke 自动化支持（依赖 AOT 编译器）
 - 支持 CoreCLR 扩展特性
 - 提供更完整的示例和文档
 
@@ -158,6 +158,8 @@ LeanCLR 提供两个版本，以满足不同场景的需求：
 
 ## 项目结构
 
+详细的项目结构说明请参阅 [项目结构文档](./docs/project_structure.md)。
+
 ```
 leanclr/
 ├── src/
@@ -166,41 +168,9 @@ leanclr/
 │   ├── tools/        # 命令行工具
 │   ├── samples/      # 示例项目
 │   └── tests/        # 单元测试
-├── demo/             # 演示示例
+├── docs/             # 文档
 └── tools/            # 构建辅助工具
 ```
-
-### runtime（运行时核心）
-
-目录：`src/runtime`
-
-LeanCLR 运行时的核心实现，包含：
-
-- **metadata** - ECMA-335 元数据解析与表示
-- **vm** - 虚拟机核心（类型系统、方法调用、运行时状态管理）
-- **interp** - IL 解释器与 IR 解释器实现
-- **gc** - 垃圾回收器（开发中）
-- **icalls** - 内部调用（Internal Calls）实现
-- **alloc** - 内存分配器（元数据分配、托管对象分配）
-
-### libraries（基础类库）
-
-目录：`src/libraries`
-
-包含运行时依赖的 .NET Framework 基础类库（mscorlib、System、System.Core 等）。
-
-### tools（命令行工具）
-
-目录：`src/tools`
-
-- **lean** - 嵌入 LeanCLR 的命令行执行工具，可直接加载并运行 .NET 程序集
-
-### samples（示例项目）
-
-目录：`src/samples`
-
-- **startup** - Win64 原生平台示例项目
-- **lean-wasm** - WebAssembly 平台示例项目
 
 ## 文档
 
@@ -236,19 +206,12 @@ build-wasm.bat
 
 ## Demo
 
-提供两个平台的演示示例，用于快速体验 LeanCLR 的功能。
+[leanclr-demo](https://github.com/focus-creative-games/leanclr-demo) 提供两个平台的示例用于快速体验 LeanCLR 的功能：
 
-### Win64
-
-目录：[demo/win64](./demo/win64)
-
-运行 `run.bat` 即可执行示例，详见 [demo/win64/README.md](./demo/win64/README.md)。
-
-### HTML5
-
-目录：[demo/h5](./demo/h5)
-
-通过 HTTP 服务器访问 `index.html` 即可在浏览器中运行示例，详见 [demo/h5/README.md](./demo/h5/README.md)。
+| 示例 | 说明 |
+|------|------|
+| **win64** | Windows x64 平台示例，运行 `run.bat` 即可执行 |
+| **h5** | WebAssembly 浏览器示例，通过 HTTP 服务器访问 `index.html` |
 
 ## 联系方式
 
