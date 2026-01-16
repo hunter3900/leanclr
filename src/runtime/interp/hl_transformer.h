@@ -23,7 +23,7 @@ struct BasicBlock
     size_t eval_stack_top;
     BasicBlock* next_bb;
 
-    BasicBlock(utils::MemPool* pool)
+    BasicBlock(alloc::MemPool* pool)
         : visited(false), inited_eval_stack(false), il_begin_offset(0), il_end_offset(0), insts(pool), in_eval_stack(pool), in_eval_stack_top(0),
           eval_stack(pool), eval_stack_top(0), next_bb(nullptr)
     {
@@ -422,7 +422,7 @@ struct GeneralInst
 class Transformer
 {
   public:
-    Transformer(metadata::RtModuleDef* mod, const metadata::RtMethodInfo* method_info, const metadata::RtMethodBody& method_body, utils::MemPool& mem_pool);
+    Transformer(metadata::RtModuleDef* mod, const metadata::RtMethodInfo* method_info, const metadata::RtMethodBody& method_body, alloc::MemPool& mem_pool);
 
     RtResultVoid transform();
 
@@ -578,7 +578,7 @@ class Transformer
     metadata::RtModuleDef* _mod;
     const metadata::RtMethodInfo* _method;
     const metadata::RtMethodBody* _method_body;
-    utils::MemPool* _pool;
+    alloc::MemPool* _pool;
 
     metadata::RtGenericContainerContext _generic_container_context{};
     const metadata::RtGenericContext* _generic_context{nullptr};

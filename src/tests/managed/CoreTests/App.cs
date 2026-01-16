@@ -45,6 +45,12 @@ namespace test
         {
             Debugger.Log(0, "info", "Hello, World!");
             Debugger.Log(1, "中文", "你好，世界！");
+            Throw1();
+        }
+
+        static void Throw1()
+        {
+                       throw new Exception();
         }
 
         public static int Run(int a, int b)

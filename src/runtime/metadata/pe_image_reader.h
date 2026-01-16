@@ -25,6 +25,6 @@ class PeImageReader
     {
     }
 
-    RtResult<CliImage*> ReadCliImage(utils::MemPool& imagePrivatePool);
+    RtResult<CliImage*> ReadCliImage(alloc::MemPool& imagePrivatePool);
 };
 } // namespace leanclr::metadata

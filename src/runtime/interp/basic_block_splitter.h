@@ -3,7 +3,7 @@
 #include "../rt_base.h"
 #include "../metadata/rt_metadata.h"
 #include "../utils/hashset.h"
-#include "../utils/mem_pool.h"
+#include "../alloc/mem_pool.h"
 #include "il_opcodes.h"
 
 namespace leanclr::interp
@@ -11,7 +11,7 @@ namespace leanclr::interp
 class BasicBlockSplitter
 {
   public:
-    BasicBlockSplitter(const metadata::RtMethodBody* method_body, utils::MemPool* pool);
+    BasicBlockSplitter(const metadata::RtMethodBody* method_body, alloc::MemPool* pool);
 
     RtResultVoid split();
 

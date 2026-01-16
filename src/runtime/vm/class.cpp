@@ -1285,7 +1285,7 @@ RtResultVoid Class::setup_methods_typedef(metadata::RtClass* klass)
     {
         RET_ERR(RtErr::BadImageFormat);
     }
-    utils::MemPool& pool = mod->get_mem_pool();
+    alloc::MemPool& pool = mod->get_mem_pool();
     const metadata::RtMethodInfo** methods = pool.calloc_any<const metadata::RtMethodInfo*>(methodCount);
     for (uint32_t i = 0; i < methodCount; ++i)
     {
@@ -1658,7 +1658,7 @@ RtResultVoid Class::setup_vtable_typedef(metadata::RtClass* klass)
         }
     }
 
-    utils::MemPool& pool = klass->image->get_mem_pool();
+    alloc::MemPool& pool = klass->image->get_mem_pool();
     // No parent: only build vtable for interfaces or corlib Object
     if (!klass->parent)
     {

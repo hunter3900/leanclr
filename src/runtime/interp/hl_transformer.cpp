@@ -19,7 +19,7 @@ namespace leanclr::interp::hl
 {
 
 Transformer::Transformer(metadata::RtModuleDef* mod, const metadata::RtMethodInfo* method_info, const metadata::RtMethodBody& method_body,
-                         utils::MemPool& mem_pool)
+                         alloc::MemPool& mem_pool)
     : _mod(mod), _method(method_info), _method_body(&method_body), _pool(&mem_pool), _vars(&mem_pool)
 {
     _generic_context = _method->generic_method ? &_method->generic_method->generic_context : nullptr;

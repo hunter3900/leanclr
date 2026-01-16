@@ -125,11 +125,11 @@ IntrinsicInvoker Intrinsics::get_intrinsic_invoker_by_id(uint16_t id)
 void Intrinsics::initialize()
 {
     utils::Vector<vm::IntrinsicEntry> intrinsicEntries;
-    leanclr::intrinsics::IntrinsicStubs::get_intrinsic_entries(intrinsicEntries);
+    intrinsics::IntrinsicStubs::get_intrinsic_entries(intrinsicEntries);
     for (auto entry : intrinsicEntries)
         register_intrinsic(entry.name, entry.func, entry.invoker);
     utils::Vector<vm::NewobjIntrinsicEntry> newobjIntrinsicEntries;
-    leanclr::intrinsics::IntrinsicStubs::get_newobj_intrinsic_entries(newobjIntrinsicEntries);
+    intrinsics::IntrinsicStubs::get_newobj_intrinsic_entries(newobjIntrinsicEntries);
     for (auto entry : newobjIntrinsicEntries)
         register_newobj_intrinsic(entry.name, entry.invoker);
 }

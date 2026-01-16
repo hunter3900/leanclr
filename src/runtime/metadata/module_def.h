@@ -4,7 +4,7 @@
 #include "cli_image.h"
 #include "rt_metadata.h"
 #include "../vm/rt_managed_types.h"
-#include "../utils/mem_pool.h"
+#include "../alloc/mem_pool.h"
 #include "../utils/rt_vector.h"
 #include "../utils/binary_reader.h"
 #include "../utils/hashmap.h"
@@ -100,7 +100,7 @@ struct RtILEHSectionHeaderFat
 class RtModuleDef
 {
   public:
-    RtModuleDef(RtAssembly* assembly, const CliImage& cliImage, utils::MemPool& pool)
+    RtModuleDef(RtAssembly* assembly, const CliImage& cliImage, alloc::MemPool& pool)
         : _assembly(assembly), _cliImage(cliImage), _pool(pool), _name(nullptr), _nameNoExt(nullptr), _classes(nullptr), _classCount(0), _methods(nullptr),
           _methodCount(0), _id(0), _refOnly(false), _referenceAssemblies(nullptr), _referenceAssemblyCount(0), _corLib(false), _moduleCctorFinished(false)
     {
@@ -122,7 +122,7 @@ class RtModuleDef
         return _cliImage;
     }
 
-    utils::MemPool& get_mem_pool() const
+    alloc::MemPool& get_mem_pool() const
     {
         return _pool;
     }
@@ -376,7 +376,7 @@ class RtModuleDef
     };
 
     const CliImage& _cliImage;
-    utils::MemPool& _pool;
+    alloc::MemPool& _pool;
     RtAssembly* const _assembly;
 
     const char* _name;

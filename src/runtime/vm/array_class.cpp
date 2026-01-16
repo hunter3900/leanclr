@@ -419,7 +419,7 @@ RtResultVoid ArrayClass::setup_vtables(metadata::RtClass* klass)
         total_vtable_count += iface->vtable_count;
     }
 
-    utils::MemPool& mem_pool = klass->image->get_mem_pool();
+    alloc::MemPool& mem_pool = klass->image->get_mem_pool();
 
     metadata::RtInterfaceOffset* interface_vtable_offsets = mem_pool.calloc_any<metadata::RtInterfaceOffset>(new_offsets.size());
     std::memcpy(interface_vtable_offsets, new_offsets.data(), new_offsets.size() * sizeof(metadata::RtInterfaceOffset));

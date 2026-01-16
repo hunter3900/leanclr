@@ -24,7 +24,7 @@ struct BasicBlock
     utils::NotFreeList<const GeneralInst*> insts;
     BasicBlock* next_bb;
 
-    BasicBlock(utils::MemPool* pool, const hl::BasicBlock* hl_bb) : hl_bb(hl_bb), ir_offset(0), insts(pool), next_bb(nullptr)
+    BasicBlock(alloc::MemPool* pool, const hl::BasicBlock* hl_bb) : hl_bb(hl_bb), ir_offset(0), insts(pool), next_bb(nullptr)
     {
     }
 };
@@ -438,7 +438,7 @@ struct GeneralInst
 class Transformer
 {
   public:
-    Transformer(hl::Transformer& hl_trans, utils::MemPool& mem_pool) : _hl_transformer(hl_trans), _mem_pool(mem_pool), _resolved_datas(&mem_pool)
+    Transformer(hl::Transformer& hl_trans, alloc::MemPool& mem_pool) : _hl_transformer(hl_trans), _mem_pool(mem_pool), _resolved_datas(&mem_pool)
     {
     }
 
@@ -455,7 +455,7 @@ class Transformer
     };
 
     hl::Transformer& _hl_transformer;
-    utils::MemPool& _mem_pool;
+    alloc::MemPool& _mem_pool;
     utils::HashMap<const hl::BasicBlock*, BasicBlock*> _hl_2_ll_bb_map;
     BasicBlock* _bb_head = nullptr;
     utils::NotFreeList<const void*> _resolved_datas;

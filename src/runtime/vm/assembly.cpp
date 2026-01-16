@@ -2,7 +2,7 @@
 
 #include "../metadata/module_def.h"
 #include "../alloc/general_allocation.h"
-#include "../utils/mem_pool.h"
+#include "../alloc/mem_pool.h"
 #include "../utils/rt_unique_ptr.h"
 #include "../metadata/pe_image_reader.h"
 #include "../const_strs.h"
@@ -60,8 +60,8 @@ RtResult<metadata::RtAssembly*> Assembly::load_by_name(RtAppDomain* app_domain, 
 
 RtResult<metadata::RtAssembly*> Assembly::load_from_data(utils::Span<byte> dllData)
 {
-    utils::MemPool* pool = alloc::GeneralAllocation::new_any<utils::MemPool>();
-    utils::UniquePtr<utils::MemPool> poolGuard(pool);
+    alloc::MemPool* pool = alloc::GeneralAllocation::new_any<alloc::MemPool>();
+    utils::UniquePtr<alloc::MemPool> poolGuard(pool);
     utils::UniquePtr<byte> dllDataGuard(dllData.data());
 
     metadata::PeImageReader reader(dllData.data(), dllData.size());

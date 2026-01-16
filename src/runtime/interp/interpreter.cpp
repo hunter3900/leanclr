@@ -31,7 +31,7 @@ static RtResult<const RtInterpMethodInfo*> transfrom(const metadata::RtMethodInf
     metadata::RtMethodBody& methodBody = optMethodBody.value();
     size_t guessSize = methodBody.code_size * 32;
     size_t pageSize = 1024;
-    utils::MemPool pool(guessSize, pageSize, utils::MemOp::align_up(guessSize, pageSize));
+    alloc::MemPool pool(guessSize, pageSize, utils::MemOp::align_up(guessSize, pageSize));
     hl::Transformer hl_transformer(mod, method, methodBody, pool);
     RET_ERR_ON_FAIL(hl_transformer.transform());
     ll::Transformer ll_transformer(hl_transformer, pool);

@@ -108,7 +108,7 @@ RtResultVoid GenericClass::setup_fields(RtClass* klass)
     RET_ERR_ON_FAIL(Class::initialize_fields(base_generic_class));
 
     klass->field_count = base_generic_class->field_count;
-    utils::MemPool& pool = klass->image->get_mem_pool();
+    alloc::MemPool& pool = klass->image->get_mem_pool();
     if (base_generic_class->fields)
     {
         size_t field_count = base_generic_class->field_count;
@@ -143,7 +143,7 @@ RtResultVoid GenericClass::setup_interfaces(RtClass* klass)
     RET_ERR_ON_FAIL(Class::initialize_interfaces(base_generic_class));
 
     klass->interface_count = base_generic_class->interface_count;
-    utils::MemPool& pool = klass->image->get_mem_pool();
+    alloc::MemPool& pool = klass->image->get_mem_pool();
     if (base_generic_class->interfaces)
     {
         size_t interface_count = base_generic_class->interface_count;
@@ -180,7 +180,7 @@ RtResultVoid GenericClass::setup_methods(RtClass* klass)
     if (base_generic_class->method_count > 0)
     {
         size_t method_count = base_generic_class->method_count;
-        utils::MemPool& pool = klass->image->get_mem_pool();
+        alloc::MemPool& pool = klass->image->get_mem_pool();
         const RtMethodInfo** methods = pool.calloc_any<const RtMethodInfo*>(method_count);
 
         for (size_t i = 0; i < method_count; ++i)
@@ -206,7 +206,7 @@ RtResultVoid GenericClass::setup_properties(RtClass* klass)
     if (base_generic_class->property_count > 0)
     {
         size_t property_count = base_generic_class->property_count;
-        utils::MemPool& pool = klass->image->get_mem_pool();
+        alloc::MemPool& pool = klass->image->get_mem_pool();
         RtPropertyInfo* properties = pool.calloc_any<RtPropertyInfo>(property_count);
 
         RtGenericContext generic_context{generic_class->class_inst, nullptr};
@@ -273,7 +273,7 @@ RtResultVoid GenericClass::setup_events(RtClass* klass)
     if (base_generic_class->event_count > 0)
     {
         size_t event_count = base_generic_class->event_count;
-        utils::MemPool& pool = klass->image->get_mem_pool();
+        alloc::MemPool& pool = klass->image->get_mem_pool();
         RtEventInfo* events = pool.calloc_any<RtEventInfo>(event_count);
 
         RtGenericContext generic_context{generic_class->class_inst, nullptr};
@@ -343,7 +343,7 @@ RtResultVoid GenericClass::setup_vtables(RtClass* klass)
         inflated_method->slot = base_method->slot;
     }
 
-    utils::MemPool& pool = klass->image->get_mem_pool();
+    alloc::MemPool& pool = klass->image->get_mem_pool();
     // Setup vtable
     if (base_generic_class->vtable_count > 0)
     {

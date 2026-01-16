@@ -2,7 +2,7 @@
 
 namespace leanclr::interp
 {
-BasicBlockSplitter::BasicBlockSplitter(const metadata::RtMethodBody* method_body, utils::MemPool* pool)
+BasicBlockSplitter::BasicBlockSplitter(const metadata::RtMethodBody* method_body, alloc::MemPool* pool)
     : _method_body(method_body), _split_offsets(), _valid_il_offsets(nullptr), _valid_il_offsets_count(0)
 {
     assert(pool != nullptr);

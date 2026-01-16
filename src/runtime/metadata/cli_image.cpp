@@ -4,7 +4,7 @@
 #include "cli_image.h"
 
 #include "../utils/binary_reader.h"
-#include "../utils/mem_pool.h"
+#include "../alloc/mem_pool.h"
 #include "../utils/rt_vector.h"
 namespace leanclr::metadata
 {
@@ -148,7 +148,7 @@ RtResultVoid CliImage::load_streams()
     RET_VOID_OK();
 }
 
-RtResultVoid CliImage::load_tables(utils::MemPool& pool)
+RtResultVoid CliImage::load_tables(alloc::MemPool& pool)
 {
     if (!tables_heap.data || tables_heap.size < TABLE_HEAP_HEADER_SIZE)
         return RtErr::BadImageFormat;
@@ -382,7 +382,7 @@ void CliImage::init_table_metas_final()
 }
 
 // Table field initialization
-void CliImage::init_table_field_metas(utils::MemPool& pool)
+void CliImage::init_table_field_metas(alloc::MemPool& pool)
 {
     // Module (0x00)
     {

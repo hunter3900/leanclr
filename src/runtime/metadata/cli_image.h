@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "../utils/mem_op.h"
+#include "../alloc/mem_pool.h"
 #include "cli_metadata.h"
 
 namespace leanclr::utils
@@ -59,7 +60,7 @@ class CliImage
   public:
     // Initialize streams and tables from metadata
     RtResultVoid load_streams();
-    RtResultVoid load_tables(leanclr::utils::MemPool& pool);
+    RtResultVoid load_tables(alloc::MemPool& pool);
 
     void set_image_data(const uint8_t* data, size_t length)
     {
@@ -270,7 +271,7 @@ class CliImage
     }
 
     // Table initialization
-    void init_table_field_metas(leanclr::utils::MemPool& pool);
+    void init_table_field_metas(alloc::MemPool& pool);
     void init_table_metas_final();
 
     // Helper for reading column values (inline implementations)

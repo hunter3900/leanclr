@@ -8,7 +8,7 @@
 
 #include "alloc/general_allocation.h"
 #include "metadata/pe_image_reader.h"
-#include "utils/mem_pool.h"
+#include "alloc/mem_pool.h"
 #include "metadata/module_def.h"
 #include "vm/assembly.h"
 #include "vm/settings.h"

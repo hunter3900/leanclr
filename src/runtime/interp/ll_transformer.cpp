@@ -2248,7 +2248,7 @@ RtResult<const RtInterpMethodInfo*> Transformer::build_interp_method_info()
 {
     const metadata::RtMethodInfo* method = _hl_transformer.get_method_info();
     metadata::RtModuleDef* mod = _hl_transformer.get_module();
-    utils::MemPool& pool = mod->get_mem_pool();
+    alloc::MemPool& pool = mod->get_mem_pool();
 
     RtInterpMethodInfo* interp_method = pool.malloc_any_zeroed<RtInterpMethodInfo>();
 

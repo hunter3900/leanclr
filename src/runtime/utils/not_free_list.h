@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <cstring>
 
-#include "mem_pool.h"
+#include "../alloc/mem_pool.h"
 
 namespace leanclr::utils
 {
@@ -17,17 +17,17 @@ template <typename V>
 class NotFreeList
 {
   public:
-    NotFreeList(MemPool* pool) : data_(nullptr), size_(0), capacity_(0), pool_(pool)
+    NotFreeList(alloc::MemPool* pool) : data_(nullptr), size_(0), capacity_(0), pool_(pool)
     {
     }
 
-    NotFreeList(MemPool* pool, std::size_t capacity) : size_(0), pool_(pool)
+    NotFreeList(alloc::MemPool* pool, std::size_t capacity) : size_(0), pool_(pool)
     {
         data_ = pool->calloc_any<V>(capacity);
         capacity_ = capacity;
     }
 
-    static NotFreeList with_capacity(MemPool* pool, std::size_t capacity)
+    static NotFreeList with_capacity(alloc::MemPool* pool, std::size_t capacity)
     {
         NotFreeList list(pool);
         if (capacity > 0)
@@ -173,7 +173,7 @@ class NotFreeList
     V* data_;
     std::size_t size_;
     std::size_t capacity_;
-    MemPool* pool_;
+    alloc::MemPool* pool_;
 };
 
 } // namespace leanclr::utils

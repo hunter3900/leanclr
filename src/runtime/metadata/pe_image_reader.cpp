@@ -2,7 +2,7 @@
 
 #include "../alloc/general_allocation.h"
 #include "../utils/binary_reader.h"
-#include "../utils/mem_pool.h"
+#include "../alloc/mem_pool.h"
 #include "cli_image.h"
 
 #include <cstring>
@@ -70,7 +70,7 @@ constexpr uint32_t CLI_HEADER_OFFSET64 = 224;
         }                                 \
     } while (0)
 
-RtResult<CliImage*> PeImageReader::ReadCliImage(utils::MemPool& imagePrivatePool)
+RtResult<CliImage*> PeImageReader::ReadCliImage(alloc::MemPool& imagePrivatePool)
 {
     CliImage* imagePtr = imagePrivatePool.malloc_any_zeroed<CliImage>();
     if (!imagePtr)

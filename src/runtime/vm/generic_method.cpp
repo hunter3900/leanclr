@@ -8,7 +8,7 @@
 #include "../metadata/module_def.h"
 #include "../alloc/metadata_allocation.h"
 #include "../utils/hashmap.h"
-#include "../utils/mem_pool.h"
+#include "../alloc/mem_pool.h"
 
 namespace leanclr::vm
 {
@@ -93,7 +93,7 @@ RtResult<const RtMethodInfo*> GenericMethod::get_method_from_pooled_generic_meth
     uint32_t base_method_gid = genericMethod->base_method_gid;
     DECLARING_AND_UNWRAP_OR_RET_ERR_ON_FAIL(const RtMethodInfo*, base_method, Method::get_method_by_method_def_gid(base_method_gid));
 
-    utils::MemPool& pool = base_method->parent->image->get_mem_pool();
+    alloc::MemPool& pool = base_method->parent->image->get_mem_pool();
     RtMethodInfo* new_method = pool.malloc_any_zeroed<RtMethodInfo>();
     const RtGenericContext& generic_context = genericMethod->generic_context;
 
