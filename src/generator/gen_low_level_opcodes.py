@@ -25,12 +25,16 @@ def group_low_level_opcodes_by_prefix(low_level_opcodes):
         grouped[hl_name].append(opcode)
     return grouped
 
-def gen_low_level_opcode_value(low_level_opcodes):
+def gen_low_level_opcode_value(prefix, low_level_opcodes):
     lines = []
     padding = "    "
     for opcode in low_level_opcodes:
         line = f"{padding}{opcode.name} = 0x{opcode.code:02X},"
         lines.append(line)
+    if prefix == 0:
+        for unused_code in range(len(low_level_opcodes), 0xFB):
+            line = f"{padding}__Unused{unused_code:02X} = 0x{unused_code:02X},"
+            lines.append(line)
     return "\n".join(lines)
 
 def get_type_cpp_type_name(type_name):
@@ -132,6 +136,11 @@ def gen_computed_goto_labels_region(grouped):
         lines.append(f"    static void* const in_labels{prefix}[] = {{")
         for opcode in opcodes:
             lines.append(f"        &&LABEL{prefix}_{opcode.name},")
+        if prefix == 0:
+            for unused_code in range(len(opcodes), 0xFB):
+                lines.append(f"        &&LABEL0___UnusedF9,") # all unused map to same label
+            for prefix_id in range(1, 6):
+                lines.append(f"        &&LABEL0_Prefix{prefix_id},")
         lines.append(f"    }};")
     return '\n'.join(lines)
 
@@ -289,7 +298,7 @@ if __name__ == "__main__":
     frr_h.replace_region("LOW_LEVEL_OPCODE_ENUM", gen_low_level_opcode_enum(low_level_opcodes))
     grouped_opcodes = group_low_level_opcodes_by_prefix(low_level_opcodes)
     for prefix, opcodes in grouped_opcodes.items():
-        frr_h.replace_region(f"LOW_LEVEL_OPCODE{prefix}", gen_low_level_opcode_value(opcodes))
+        frr_h.replace_region(f"LOW_LEVEL_OPCODE{prefix}", gen_low_level_opcode_value(prefix, opcodes))
     frr_h.replace_region("LOW_LEVEL_INSTRUCTION_STRUCTS", gen_low_level_opcode_structs(low_level_opcodes))
     frr_h.save()
     print(f"Updated low-level opcode definitions in {output_file_h}")

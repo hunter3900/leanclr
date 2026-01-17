@@ -590,7 +590,7 @@ T* get_static_field_address(const metadata::RtFieldInfo* field)
 
 #if LEANCLR_USE_COMPUTED_GOTO_DISPATCHER
 #define LEANCLR_SWITCH_N(n, op_offset) goto* in_labels##n[ip[op_offset]];
-#define LEANCLR_CONTINUE_N(n) goto* in_labels##n[ip[n]];
+#define LEANCLR_CONTINUE_N(n, op_offset) goto* in_labels##n[ip[op_offset]];
 #define LEANCLR_CASE_BEGIN_N(n, code) \
     LABEL##n##_##code:                \
     {                                 \
@@ -609,7 +609,7 @@ T* get_static_field_address(const metadata::RtFieldInfo* field)
 #else
 
 #define LEANCLR_SWITCH_N(n,op_offset) switch (*(ll::OpCodeValue##n*)(ip + op_offset))
-#define LEANCLR_CONTINUE_N(n, ip) continue
+#define LEANCLR_CONTINUE_N(n, op_offset) continue
 
 #define LEANCLR_CASE_BEGIN_N(n, code) \
     case ll::OpCodeValue##n::code:    \
@@ -628,44 +628,43 @@ T* get_static_field_address(const metadata::RtFieldInfo* field)
     }
 #endif
 
-// 兼容原有命名
 #define LEANCLR_SWITCH0() LEANCLR_SWITCH_N(0, 0)
-#define LEANCLR_CONTINUE0() LEANCLR_CONTINUE_N(0)
+#define LEANCLR_CONTINUE0() LEANCLR_CONTINUE_N(0, 0)
 #define LEANCLR_CASE_BEGIN0(code) LEANCLR_CASE_BEGIN_N(0, code)
 #define LEANCLR_CASE_BEGIN_LITE0(code) LEANCLR_CASE_BEGIN_LITE_N(0, code)
 #define LEANCLR_CASE_END0() LEANCLR_CASE_END_N(0)
 #define LEANCLR_CASE_END_LITE0() LEANCLR_CASE_END_LITE_N(0)
 
 #define LEANCLR_SWITCH1() LEANCLR_SWITCH_N(1, 1)
-#define LEANCLR_CONTINUE1() LEANCLR_CONTINUE_N(1)
+#define LEANCLR_CONTINUE1() LEANCLR_CONTINUE_N(1, 1)
 #define LEANCLR_CASE_BEGIN1(code) LEANCLR_CASE_BEGIN_N(1, code)
 #define LEANCLR_CASE_BEGIN_LITE1(code) LEANCLR_CASE_BEGIN_LITE_N(1, code)
 #define LEANCLR_CASE_END1() LEANCLR_CASE_END_N(1)
 #define LEANCLR_CASE_END_LITE1() LEANCLR_CASE_END_LITE_N(1)
 
 #define LEANCLR_SWITCH2() LEANCLR_SWITCH_N(2, 1)
-#define LEANCLR_CONTINUE2() LEANCLR_CONTINUE_N(2)
+#define LEANCLR_CONTINUE2() LEANCLR_CONTINUE_N(2, 1)
 #define LEANCLR_CASE_BEGIN2(code) LEANCLR_CASE_BEGIN_N(2, code)
 #define LEANCLR_CASE_BEGIN_LITE2(code) LEANCLR_CASE_BEGIN_LITE_N(2, code)
 #define LEANCLR_CASE_END2() LEANCLR_CASE_END_N(2)
 #define LEANCLR_CASE_END_LITE2() LEANCLR_CASE_END_LITE_N(2)
 
 #define LEANCLR_SWITCH3() LEANCLR_SWITCH_N(3, 1)
-#define LEANCLR_CONTINUE3() LEANCLR_CONTINUE_N(3)
+#define LEANCLR_CONTINUE3() LEANCLR_CONTINUE_N(3, 1)
 #define LEANCLR_CASE_BEGIN3(code) LEANCLR_CASE_BEGIN_N(3, code)
 #define LEANCLR_CASE_BEGIN_LITE3(code) LEANCLR_CASE_BEGIN_LITE_N(3, code)
 #define LEANCLR_CASE_END3() LEANCLR_CASE_END_N(3)
 #define LEANCLR_CASE_END_LITE3() LEANCLR_CASE_END_LITE_N(3)
 
 #define LEANCLR_SWITCH4() LEANCLR_SWITCH_N(4, 1)
-#define LEANCLR_CONTINUE4() LEANCLR_CONTINUE_N(4)
+#define LEANCLR_CONTINUE4() LEANCLR_CONTINUE_N(4, 1)
 #define LEANCLR_CASE_BEGIN4(code) LEANCLR_CASE_BEGIN_N(4, code)
 #define LEANCLR_CASE_BEGIN_LITE4(code) LEANCLR_CASE_BEGIN_LITE_N(4, code)
 #define LEANCLR_CASE_END4() LEANCLR_CASE_END_N(4)
 #define LEANCLR_CASE_END_LITE4() LEANCLR_CASE_END_LITE_N(4)
 
 #define LEANCLR_SWITCH5() LEANCLR_SWITCH_N(5, 1)
-#define LEANCLR_CONTINUE5() LEANCLR_CONTINUE_N(5)
+#define LEANCLR_CONTINUE5() LEANCLR_CONTINUE_N(5, 1)
 #define LEANCLR_CASE_BEGIN5(code) LEANCLR_CASE_BEGIN_N(5, code)
 #define LEANCLR_CASE_BEGIN_LITE5(code) LEANCLR_CASE_BEGIN_LITE_N(5, code)
 #define LEANCLR_CASE_END5() LEANCLR_CASE_END_N(5)
@@ -916,6 +915,27 @@ RtResult<const RtStackObject*> Interpreter::execute(const metadata::RtMethodInfo
         &&LABEL0_EndFilterShort,
         &&LABEL0_EndFinallyShort,
         &&LABEL0_EndFaultShort,
+        &&LABEL0___UnusedF9,
+        &&LABEL0___UnusedF9,
+        &&LABEL0___UnusedF9,
+        &&LABEL0___UnusedF9,
+        &&LABEL0___UnusedF9,
+        &&LABEL0___UnusedF9,
+        &&LABEL0___UnusedF9,
+        &&LABEL0___UnusedF9,
+        &&LABEL0___UnusedF9,
+        &&LABEL0___UnusedF9,
+        &&LABEL0___UnusedF9,
+        &&LABEL0___UnusedF9,
+        &&LABEL0___UnusedF9,
+        &&LABEL0___UnusedF9,
+        &&LABEL0___UnusedF9,
+        &&LABEL0___UnusedF9,
+        &&LABEL0_Prefix1,
+        &&LABEL0_Prefix2,
+        &&LABEL0_Prefix3,
+        &&LABEL0_Prefix4,
+        &&LABEL0_Prefix5,
     };
     static void* const in_labels1[] = {
         &&LABEL1_InitLocals,
@@ -3806,6 +3826,12 @@ method_start:
             LEANCLR_CASE_END_LITE0()
 
             ///}}SHORT_INSTRUCTION_CASES
+            LEANCLR_CASE_BEGIN_LITE0(__UnusedF9)
+            {
+                assert(false && "Unused opcode");
+                RAISE_RUNTIME_ERROR(RtErr::ExecutionEngine);
+            }
+            LEANCLR_CASE_END_LITE0()
             LEANCLR_CASE_BEGIN_LITE0(Prefix1)
             {
                 LEANCLR_SWITCH1()

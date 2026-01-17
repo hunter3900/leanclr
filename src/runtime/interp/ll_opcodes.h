@@ -904,6 +904,22 @@ enum class OpCodeValue0 : uint8_t
     EndFilterShort = 0xE8,
     EndFinallyShort = 0xE9,
     EndFaultShort = 0xEA,
+    __UnusedEB = 0xEB,
+    __UnusedEC = 0xEC,
+    __UnusedED = 0xED,
+    __UnusedEE = 0xEE,
+    __UnusedEF = 0xEF,
+    __UnusedF0 = 0xF0,
+    __UnusedF1 = 0xF1,
+    __UnusedF2 = 0xF2,
+    __UnusedF3 = 0xF3,
+    __UnusedF4 = 0xF4,
+    __UnusedF5 = 0xF5,
+    __UnusedF6 = 0xF6,
+    __UnusedF7 = 0xF7,
+    __UnusedF8 = 0xF8,
+    __UnusedF9 = 0xF9,
+    __UnusedFA = 0xFA,
 
     //}}LOW_LEVEL_OPCODE00
     Prefix1 = 0xFB,
@@ -1167,7 +1183,7 @@ enum class OpCodeValue1 : uint8_t
     EndFinally = 0xF8,
     EndFault = 0xF9,
 
-    //}}LOW_LEVEL_OPCODE11
+    //}}LOW_LEVEL_OPCODE1
 };
 
 enum class OpCodeValue2 : uint8_t
@@ -1225,7 +1241,7 @@ enum class OpCodeValue2 : uint8_t
     CpBlk = 0x31,
     GetEnumLongHashCode = 0x32,
 
-    //}}LOW_LEVEL_OPCODE22
+    //}}LOW_LEVEL_OPCODE2
 };
 
 enum class OpCodeValue3 : uint8_t
@@ -1344,7 +1360,7 @@ enum class OpCodeValue3 : uint8_t
     StfldI8Unaligned = 0x6E,
     StfldAnyLarge = 0x6F,
 
-    //}}LOW_LEVEL_OPCODE33
+    //}}LOW_LEVEL_OPCODE3
 };
 
 enum class OpCodeValue4 : uint8_t
@@ -1354,14 +1370,14 @@ enum class OpCodeValue4 : uint8_t
     Nop = 0x01,
     Arglist = 0x02,
 
-    //}}LOW_LEVEL_OPCODE44
+    //}}LOW_LEVEL_OPCODE4
 };
 
 enum class OpCodeValue5 : uint8_t
 {
     //{{LOW_LEVEL_OPCODE5
     Nop = 0x00,
-    //}}LOW_LEVEL_OPCODE5
+    //}}LOW_LEVEL_OPCODE
 };
 
 //{{LOW_LEVEL_INSTRUCTION_STRUCTS
