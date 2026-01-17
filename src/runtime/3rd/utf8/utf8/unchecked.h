@@ -188,13 +188,13 @@ octet_iterator utf16to8(u16bit_iterator start, u16bit_iterator end, octet_iterat
 {
     while (start != end)
     {
-        utfchar32_t cp = utf8::internal::mask16(*start++);
+        utfchar32_t cp = static_cast<utfchar32_t>(utf8::internal::mask16(*start++));
         // Take care of surrogate pairs first
         if (utf8::internal::is_lead_surrogate(cp))
         {
             if (start == end)
                 return result;
-            utfchar32_t trail_surrogate = utf8::internal::mask16(*start++);
+            utfchar32_t trail_surrogate = static_cast<utfchar32_t>(utf8::internal::mask16(*start++));
             cp = (cp << 10) + trail_surrogate + internal::SURROGATE_OFFSET;
         }
         result = utf8::unchecked::append(cp, result);
