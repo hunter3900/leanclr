@@ -160,8 +160,8 @@ build-wasm/bin/
    }
 
    // Load assembly
-   const load_assemby = Module.cwrap('load_assemby', 'number', ['string']);
-   const assemblyPtr = load_assemby('YourAssembly');
+   const load_assembly = Module.cwrap('load_assembly', 'number', ['string']);
+   const assemblyPtr = load_assembly('YourAssembly');
 
    // Invoke method
    const invoke_method = Module.cwrap('invoke_method', 'number', ['number', 'string', 'string']);
@@ -182,7 +182,7 @@ The WASM module exports the following C functions for JavaScript interop:
 
 | Function | Description |
 |----------|-------------|
-| `_load_assemby` | Load a .NET assembly by name |
+| `_load_assembly` | Load a .NET assembly by name |
 | `_invoke_method` | Invoke a method on a loaded assembly |
 | `_initialize_runtime` | Initialize the LeanCLR runtime |
 

@@ -209,7 +209,7 @@ When building for WebAssembly, export the following functions:
 
 ```cmake
 target_link_options(your_app PRIVATE
-    "SHELL:-s EXPORTED_FUNCTIONS=['_initialize_runtime','_load_assemby','_invoke_method']"
+    "SHELL:-s EXPORTED_FUNCTIONS=['_initialize_runtime','_load_assembly','_invoke_method']"
     "SHELL:-s EXPORTED_RUNTIME_METHODS=['ccall','cwrap']"
 )
 ```
@@ -227,7 +227,7 @@ createStartupModule().then(function(Module) {
     Module.ccall('initialize_runtime', 'number', [], []);
     
     // Load assembly
-    const load = Module.cwrap('load_assemby', 'number', ['string']);
+    const load = Module.cwrap('load_assembly', 'number', ['string']);
     const assembly = load('MyAssembly');
     
     // Invoke method

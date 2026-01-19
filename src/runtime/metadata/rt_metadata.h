@@ -491,6 +491,8 @@ typedef void (*RtManagedMethodPointer)();
 
 typedef RtResultVoid (*RtInvokeMethodPointer)(RtManagedMethodPointer method_ptr, const RtMethodInfo* method, const interp::RtStackObject* args,
                                               interp::RtStackObject* ret);
+typedef void (*RtCInvokeMethodPointer)(RtManagedMethodPointer method_ptr, const RtMethodInfo* method, const interp::RtStackObject* args,
+                                              interp::RtStackObject* ret, RtErr* out_err);
 
 // Interface offset structure
 struct RtInterfaceOffset

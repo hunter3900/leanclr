@@ -12,35 +12,35 @@ struct Unit
 template <typename T, typename E>
 class Result
 {
-    std::variant<T, E> data;
+    std::variant<T, E> _data;
 #ifndef NDEBUG
-    mutable bool checked = false;
+    mutable bool _checked = false;
 #endif
 
   public:
-    Result(const T& value) noexcept: data(value)
+    Result(const T& value) noexcept: _data(value)
     {
     }
-    Result(T&& value) noexcept: data(std::move(value))
-    {
-    }
-
-    Result(const E& error) noexcept: data(error)
+    Result(T&& value) noexcept: _data(std::move(value))
     {
     }
 
-    Result(E&& error) noexcept: data(std::move(error))
+    Result(const E& error) noexcept: _data(error)
+    {
+    }
+
+    Result(E&& error) noexcept: _data(std::move(error))
     {
     }
 
     Result(const Result<T, E>& other) = delete;
     Result<T, E>& operator = (const Result<T, E>& other) = delete;
 
-    Result(Result<T, E>&& other) noexcept: data(std::move(other.data))
+    Result(Result<T, E>&& other) noexcept: _data(std::move(other._data))
     {
 #ifndef NDEBUG
-        checked = other.checked;
-        other.checked = true;
+        _checked = other._checked;
+        other._checked = true;
 #endif // !NDEBUG
     }
 
@@ -57,30 +57,30 @@ class Result
 #ifndef NDEBUG
     ~Result()
     {
-        assert(checked && "Result value was not checked before destruction");
+        assert(_checked && "Result value was not checked before destruction");
     }
 #endif
 
     bool is_ok() const
     {
 #ifndef NDEBUG
-        checked = true;
+        _checked = true;
 #endif
-        return std::holds_alternative<T>(data);
+        return std::holds_alternative<T>(_data);
     }
 
     bool is_err() const
     {
 #ifndef NDEBUG
-        checked = true;
+        _checked = true;
 #endif
-        return std::holds_alternative<E>(data);
+        return std::holds_alternative<E>(_data);
     }
 
     T& unwrap()
     {
         assert(is_ok() && "Result::unwrap() called on error value");
-        return std::get<T>(data);
+        return std::get<T>(_data);
     }
 
     // T& unwrap_ref()
@@ -92,7 +92,7 @@ class Result
     E unwrap_err()
     {
         assert(is_err() && "Result::unwrap_err() called on ok value");
-        return std::get<E>(data);
+        return std::get<E>(_data);
     }
 
     template <typename F>
@@ -102,7 +102,7 @@ class Result
     }
 
     template <typename F>
-    auto map(F f) -> Result<decltype(f(std::get<T>(data))), E>
+    auto map(F f) -> Result<decltype(f(std::get<T>(_data))), E>
     {
         if (is_ok())
             return Result(f(unwrap()));
@@ -119,25 +119,64 @@ class Result
 };
 
 template <typename E>
-using ResultVoid = Result<Unit, E>;
-
-template <typename E>
-inline Result<Unit, E> make_ok()
+class ResultVoid
 {
-    return Result<Unit, E>::Ok(Unit{});
-}
+    E _err;
+    bool _is_ok;
+#ifndef NDEBUG
+    mutable bool _checked = false;
+#endif
 
-template <typename T, typename E>
-inline Result<T, E> make_ok(const T& value)
-{
-    return Result<T, E>::Ok(value);
-}
+  public:
+    ResultVoid(const Unit& value) noexcept: _is_ok(true)
+    {
+    }
 
-template <typename T, typename E>
-inline Result<T, E> make_err(const E& error)
-{
-    return Result<T, E>::Err(error);
-}
+    ResultVoid(const E& error) noexcept: _err(error), _is_ok(false)
+    {
+    }
+
+    ResultVoid(const ResultVoid<E>& other) = delete;
+    ResultVoid<E>& operator = (const ResultVoid<E>& other) = delete;
+
+    ResultVoid(ResultVoid<E>&& other) noexcept: _err(other._err), _is_ok(other._is_ok)
+    {
+#ifndef NDEBUG
+        _checked = other._checked;
+        other._checked = true;
+#endif // !NDEBUG
+    }
+
+#ifndef NDEBUG
+    ~ResultVoid()
+    {
+        assert(_checked && "Result value was not checked before destruction");
+    }
+#endif
+
+    bool is_ok() const
+    {
+#ifndef NDEBUG
+        _checked = true;
+#endif
+        return _is_ok;
+    }
+
+    bool is_err() const
+    {
+#ifndef NDEBUG
+        _checked = true;
+#endif
+        return !_is_ok;
+    }
+
+    E unwrap_err()
+    {
+        assert(is_err() && "Result::unwrap_err() called on ok value");
+        return _err;
+    }
+};
+
 } // namespace leanclr::core
 
 #define RET_ERR_ON_FAIL(expr)         \

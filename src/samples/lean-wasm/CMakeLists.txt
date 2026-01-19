@@ -26,7 +26,7 @@ if(EMSCRIPTEN)
     set(LEAN_WASM_COMMON_LINK_OPTIONS
         "SHELL:-s WASM=1"
         "SHELL:-s ALLOW_MEMORY_GROWTH=1"
-        "SHELL:-s EXPORTED_FUNCTIONS=['_load_assemby','_invoke_method','_initialize_runtime','_allocate_bytes','_malloc','_free']"
+        "SHELL:-s EXPORTED_FUNCTIONS=['_load_assembly','_invoke_method','_initialize_runtime','_allocate_bytes','_malloc','_free']"
         "SHELL:-s EXPORTED_RUNTIME_METHODS=['ccall','cwrap','getValue','setValue','intArrayFromString','HEAPU8','allocate']"
         "SHELL:-s MODULARIZE=1"
         "SHELL:-s EXPORT_NAME='createStartupModule'"

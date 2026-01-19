@@ -1779,7 +1779,7 @@ function load_assembly_file(assembly_name,out_buf,out_size) { if (typeof Module.
 
 // Imports from the Wasm binary.
 var _allocate_bytes = Module['_allocate_bytes'] = makeInvalidEarlyAccess('_allocate_bytes');
-var _load_assemby = Module['_load_assemby'] = makeInvalidEarlyAccess('_load_assemby');
+var _load_assembly = Module['_load_assembly'] = makeInvalidEarlyAccess('_load_assembly');
 var _invoke_method = Module['_invoke_method'] = makeInvalidEarlyAccess('_invoke_method');
 var _initialize_runtime = Module['_initialize_runtime'] = makeInvalidEarlyAccess('_initialize_runtime');
 var _free = Module['_free'] = makeInvalidEarlyAccess('_free');
@@ -1796,7 +1796,7 @@ var _emscripten_stack_get_current = makeInvalidEarlyAccess('_emscripten_stack_ge
 
 function assignWasmExports(wasmExports) {
   Module['_allocate_bytes'] = _allocate_bytes = createExportWrapper('allocate_bytes', 1);
-  Module['_load_assemby'] = _load_assemby = createExportWrapper('load_assemby', 1);
+  Module['_load_assembly'] = _load_assembly = createExportWrapper('load_assembly', 1);
   Module['_invoke_method'] = _invoke_method = createExportWrapper('invoke_method', 3);
   Module['_initialize_runtime'] = _initialize_runtime = createExportWrapper('initialize_runtime', 0);
   Module['_free'] = _free = createExportWrapper('free', 1);

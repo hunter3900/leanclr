@@ -19,7 +19,7 @@
 #include "vm/field.h"
 #include "vm/pinvoke.h"
 #include "metadata/metadata_name.h"
-#include "public/leanclr.h"
+#include "public/leanclr.hpp"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -251,16 +251,16 @@ int32_t my_add(int32_t a, int32_t b)
 RtResultVoid my_add_invoker(metadata::RtManagedMethodPointer, const metadata::RtMethodInfo*, const interp::RtStackObject* params, interp::RtStackObject* ret)
 {
     size_t offset = 0;
-    auto a = get_argument_from_eval_stack<int32_t>(params, offset);
-    auto b = get_argument_from_eval_stack<int32_t>(params, offset);
+    auto a = RuntimeApi::get_argument<int32_t>(params, offset);
+    auto b = RuntimeApi::get_argument<int32_t>(params, offset);
     int32_t result = my_add(a, b);
-    set_return_value_to_eval_stack(ret, result);
+    RuntimeApi::set_return_value<int32_t>(ret, result);
     RET_VOID_OK();
 }
 
 void RegisterCustomPInvokeMethods()
 {
-    register_pinvoke_func("[CoreTests]test.CustomPInvoke::Add(System.Int32,System.Int32)", (vm::PInvokeFunction)(&my_add), my_add_invoker);
+    RuntimeApi::register_pinvoke_func("[CoreTests]test.CustomPInvoke::Add(System.Int32,System.Int32)", (vm::PInvokeFunction)(&my_add), my_add_invoker);
 }
 
 int main(int argc, char* argv[])

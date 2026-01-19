@@ -14,7 +14,7 @@
 #include "vm/class.h"
 #include "vm/method.h"
 #include "vm/pinvoke.h"
-#include "public/leanclr.h"
+#include "public/leanclr.hpp"
 
 #ifdef EMSCRIPTEN
 #include <emscripten.h>
@@ -46,16 +46,16 @@ extern "C" int32_t my_add(int32_t a, int32_t b);
 RtResultVoid my_add_invoker(metadata::RtManagedMethodPointer, const metadata::RtMethodInfo*, const interp::RtStackObject* params, interp::RtStackObject* ret)
 {
     size_t offset = 0;
-    auto a = get_argument_from_eval_stack<int32_t>(params, offset);
-    auto b = get_argument_from_eval_stack<int32_t>(params, offset);
+    auto a = RuntimeApi::get_argument<int32_t>(params, offset);
+    auto b = RuntimeApi::get_argument<int32_t>(params, offset);
     int32_t result = my_add(a, b);
-    set_return_value_to_eval_stack(ret, result);
+    RuntimeApi::set_return_value<int32_t>(ret, result);
     RET_VOID_OK();
 }
 
 void RegisterCustomPInvokeMethods()
 {
-    register_pinvoke_func("[CoreTests]test.CustomPInvoke::Add(System.Int32,System.Int32)", (vm::PInvokeFunction)(&my_add), my_add_invoker);
+    RuntimeApi::register_pinvoke_func("[CoreTests]test.CustomPInvoke::Add(System.Int32,System.Int32)", (vm::PInvokeFunction)(&my_add), my_add_invoker);
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void* allocate_bytes(size_t size)
@@ -63,7 +63,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void* allocate_bytes(size_t size)
     return alloc::GeneralAllocation::malloc_zeroed(size);
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE metadata::RtAssembly* load_assemby(const char* assembly_name)
+extern "C" EMSCRIPTEN_KEEPALIVE metadata::RtAssembly* load_assembly(const char* assembly_name)
 {
     auto ret = vm::Assembly::load_by_name(assembly_name);
     if (ret.is_err())

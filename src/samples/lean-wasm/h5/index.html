@@ -572,9 +572,9 @@
                 updateStatus('last-result', 'loading', '执行中...');
 
                 // 加载程序集
-                const load_assemby = Module.cwrap('load_assemby', 'number', ['string']);
+                const load_assembly = Module.cwrap('load_assembly', 'number', ['string']);
                 log('📂 加载 CoreTests 程序集...', 'info');
-                const assemblyPtr = load_assemby('CoreTests');
+                const assemblyPtr = load_assembly('CoreTests');
 
                 if (assemblyPtr === 0) {
                     log('❌ 程序集加载失败', 'error');

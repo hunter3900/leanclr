@@ -603,7 +603,7 @@ RtResult<const RtTypeSig*> RtModuleDef::get_generic_param_typesig_by_rid(uint32_
     {
         RET_OK((by_ref ? _genericParamByRefTypeSigs : _genericParamByValTypeSigs) + rid - 1);
     }
-    return core::make_err<const RtTypeSig*, RtErr>(RtErr::BadImageFormat);
+    RET_ERR(RtErr::BadImageFormat);
 }
 
 RtResult<RtClass*> RtModuleDef::get_class_by_name(const char* full_name, bool ignore_case, bool throw_exception_when_not_found)

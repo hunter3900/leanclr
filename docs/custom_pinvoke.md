@@ -36,7 +36,8 @@ namespace test
 #### a. Include the LeanCLR Header
 
 ```cpp
-#include "public/leanclr.h"
+#include "public/leanclr.hpp"
+// #include "public/leanclr.h" in c
 ```
 
 #### b. Implement the Native Function
@@ -56,10 +57,10 @@ LeanCLR cannot directly invoke arbitrary native signatures. Instead, you must pr
 RtResultVoid my_add_invoker(metadata::RtManagedMethodPointer, const metadata::RtMethodInfo*, const interp::RtStackObject* params, interp::RtStackObject* ret)
 {
     size_t offset = 0;
-    auto a = get_argument_from_eval_stack<int32_t>(params, offset);
-    auto b = get_argument_from_eval_stack<int32_t>(params, offset);
+    auto a = RuntimeApi::get_argument<int32_t>(params, offset);
+    auto b = RuntimeApi::get_argument<int32_t>(params, offset);
     int32_t result = my_add(a, b);
-    set_return_value_to_eval_stack(ret, result);
+    RuntimeApi::set_return_value<int32_t>(ret, result);
     RET_VOID_OK();
 }
 ```
@@ -68,8 +69,8 @@ RtResultVoid my_add_invoker(metadata::RtManagedMethodPointer, const metadata::Rt
   ```cpp
   RtResultVoid (metadata::RtManagedMethodPointer, const metadata::RtMethodInfo*, const interp::RtStackObject* params, interp::RtStackObject* ret)
   ```
-- Use `get_argument_from_eval_stack<T>()` to extract arguments. Note that `offset` is not always the parameter index, as struct parameters may occupy multiple stack slots.
-- Use `set_return_value_to_eval_stack()` to set the return value.
+- Use `RuntimeApi::get_argument<T>()` to extract arguments. Note that `offset` is not always the parameter index, as struct parameters may occupy multiple stack slots.
+- Use `RuntimeApi::set_return_value()` to set the return value.
 - Use `RET_VOID_OK();` to return success.
 
 #### d. Register the P/Invoke Function
@@ -79,7 +80,7 @@ Register the invoker after the runtime is initialized:
 ```cpp
 void RegisterCustomPInvokeMethods()
 {
-    register_pinvoke_func(
+    RuntimeApi::register_pinvoke_func(
         "[CoreTests]test.CustomPInvoke::Add(System.Int32,System.Int32)",
         (vm::PInvokeFunction)&my_add,
         my_add_invoker

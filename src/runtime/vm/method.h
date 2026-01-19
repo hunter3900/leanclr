@@ -62,6 +62,8 @@ class Method
     static size_t get_param_count_exclude_this(const metadata::RtMethodInfo* method);
     static uint8_t get_generic_param_count(const metadata::RtMethodInfo* method);
     static bool contains_not_instantiated_generic_param(const metadata::RtMethodInfo* method);
+    static size_t get_total_arg_stack_object_size(const metadata::RtMethodInfo* method);
+    static size_t get_return_value_stack_object_size(const metadata::RtMethodInfo* method);
     static RtResult<bool> is_intrinsic(const metadata::RtMethodInfo* method);
     static RtResultVoid build_method_arg_descs(metadata::RtMethodInfo* method);
     static size_t get_method_index_in_class(const metadata::RtMethodInfo* method);

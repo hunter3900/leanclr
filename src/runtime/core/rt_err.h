@@ -2,7 +2,7 @@
 
 namespace leanclr::core
 {
-enum class RtErr
+enum class RtErr: uint8_t
 {
     None = 0,
     ManagedException,

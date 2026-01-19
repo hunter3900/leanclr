@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <stddef.h>
 
 #define LEANCLR_SUPPORT_UNALIGNED_ACCESS 1
 

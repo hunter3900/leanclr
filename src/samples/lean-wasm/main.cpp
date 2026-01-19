@@ -25,7 +25,7 @@ using namespace leanclr;
 EM_JS(int32_t, load_assembly_file, (const char* assembly_name, byte** out_buf, size_t* out_size), {
     // This is a wrapper that JavaScript will override
     // The actual implementation is provided by Module.load_assembly_file
-    if (typeof Module.load_assembly_file === 'function')
+    if (typeof Module.load_assembly_file == = 'function')
     {
         return Module.load_assembly_file(assembly_name, out_buf, out_size);
     }
@@ -42,7 +42,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE void* allocate_bytes(size_t size)
     return alloc::GeneralAllocation::malloc_zeroed(size);
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE metadata::RtAssembly* load_assemby(const char* assembly_name)
+extern "C" EMSCRIPTEN_KEEPALIVE metadata::RtAssembly* load_assembly(const char* assembly_name)
 {
     auto ret = vm::Assembly::load_by_name(assembly_name);
     if (ret.is_err())

@@ -333,6 +333,16 @@ bool Method::contains_not_instantiated_generic_param(const RtMethodInfo* method)
     return false;
 }
 
+size_t Method::get_total_arg_stack_object_size(const metadata::RtMethodInfo* method)
+{
+    return method->total_arg_stack_object_size;
+}
+
+size_t Method::get_return_value_stack_object_size(const metadata::RtMethodInfo* method)
+{
+    return method->ret_stack_object_size;
+}
+
 RtResult<bool> Method::is_intrinsic(const RtMethodInfo* method)
 {
     metadata::RtClass* intrinsic_attribute_klass = Class::get_corlib_types().cls_intrinsic;

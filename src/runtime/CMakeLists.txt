@@ -37,6 +37,8 @@ set_target_properties(leanclr PROPERTIES
     CXX_STANDARD_REQUIRED ON
 )
 
+target_compile_definitions(leanclr PRIVATE LEANCLR_DLL_EXPORTS)
+
 if(MSVC)
     string(REGEX REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
     target_compile_options(leanclr PRIVATE /EHs-c- /MP)
