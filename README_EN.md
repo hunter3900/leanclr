@@ -136,6 +136,13 @@ LeanCLR provides two editions to meet different scenario requirements:
 - Slightly lower completeness than Mono (main gap is platform-specific icalls)
 - CoreCLR extension features (such as static abstract interface methods) will be implemented in future versions
 
+### Stability
+
+The current version has achieved a **very high** level of stability.
+
+- Fully compatible with Unity 2019.4.x - 6000.3.x LTS IL2CPP's BCL, passing all thousands of test cases.
+- 99.95% compatible with Mono 4.8's BCL, with only one test case failing.
+
 ### Roadmap
 
 **Near-Term Goals:**
