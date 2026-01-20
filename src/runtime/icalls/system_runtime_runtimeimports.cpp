@@ -74,10 +74,24 @@ RtResultVoid SystemRuntimeRuntimeImports::ecvt_s(uint8_t* buffer, int32_t size, 
     }
     std::strncpy(reinterpret_cast<char*>(buffer), str, size - 1);
     buffer[size - 1] = 0;
-    RET_VOID_OK();
 #else
-    RET_ERR(RtErr::NotImplemented);
+    int written = snprintf(reinterpret_cast<char*>(buffer), size, "%.*e", digits, value);
+    if (written < 0 || written >= size) {
+        RET_ERR(RtErr::Argument);
+    }
+    // 解析小数点和符号
+    const char* buf = reinterpret_cast<const char*>(buffer);
+    *sign = (buf[0] == '-') ? 1 : 0;
+    const char* e_ptr = strchr(buf, 'e');
+    if (!e_ptr) e_ptr = strchr(buf, 'E');
+    if (!e_ptr) {
+        *decpt = 0;
+    } else {
+        int exp = atoi(e_ptr + 1);
+        *decpt = exp + 1;
+    }
 #endif
+    RET_VOID_OK();
 }
 
 static RtResultVoid ecvt_s_invoker(RtManagedMethodPointer method_pointer, const RtMethodInfo* method, const interp::RtStackObject* params,
