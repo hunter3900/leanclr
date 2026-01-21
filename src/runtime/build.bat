@@ -6,6 +6,7 @@ set BUILD_TYPE=Release
 set ARCH=x64
 set VS_VERSION=17 2022
 set CLEAN=0
+set BUILD_SHARED=0
 
 :parse_args
 if "%~1"=="" goto end_parse
@@ -15,6 +16,7 @@ if /i "%~1"=="clean" set CLEAN=1
 if /i "%~1"=="-clean" set CLEAN=1
 if /i "%~1"=="x86" set ARCH=Win32
 if /i "%~1"=="x64" set ARCH=x64
+if /i "%~1"=="shared" set BUILD_SHARED=1
 shift
 goto parse_args
 :end_parse
@@ -47,7 +49,11 @@ pushd "%CMAKE_BUILD_DIR%"
 :: Generate Visual Studio solution
 echo.
 echo [1/2] Generating Visual Studio solution...
-cmake -G "Visual Studio %VS_VERSION%" -A %ARCH% ..\..\
+if %BUILD_SHARED%==1 (
+    cmake -G "Visual Studio %VS_VERSION%" -A %ARCH% -DBUILD_SHARED_LEANCLR=ON ..\..\
+) else (
+    cmake -G "Visual Studio %VS_VERSION%" -A %ARCH% ..\..\
+)
 if errorlevel 1 (
     echo ERROR: CMake generation failed.
     popd

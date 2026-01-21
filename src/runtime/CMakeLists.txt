@@ -1,5 +1,8 @@
+
 cmake_minimum_required(VERSION 3.15)
 project(leanclr CXX)
+
+option(BUILD_SHARED_LEANCLR "Build leanclr as a shared (dynamic) library" OFF)
 
 set(RUNTIME_DIRS
     alloc
@@ -22,7 +25,13 @@ foreach(dir ${RUNTIME_DIRS})
     list(APPEND RUNTIME_SOURCES ${dir_sources})
 endforeach()
 
-add_library(leanclr STATIC ${RUNTIME_SOURCES})
+if(BUILD_SHARED_LEANCLR)
+    add_library(leanclr SHARED ${RUNTIME_SOURCES})
+else()
+    add_library(leanclr STATIC ${RUNTIME_SOURCES})
+endif()
+
+target_compile_definitions(leanclr PRIVATE LEANCLR_DLL_EXPORTS)
 
 set(_include_dirs ${CMAKE_CURRENT_LIST_DIR})
 foreach(dir ${RUNTIME_DIRS})
@@ -36,8 +45,6 @@ set_target_properties(leanclr PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
 )
-
-target_compile_definitions(leanclr PRIVATE LEANCLR_DLL_EXPORTS)
 
 if(MSVC)
     string(REGEX REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
