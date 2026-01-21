@@ -22,19 +22,19 @@ using namespace leanclr;
 
 // Define load_assembly_file using EM_JS so JavaScript can implement it
 #ifdef EMSCRIPTEN
-EM_JS(int32_t, load_assembly_file, (const char* assembly_name, byte** out_buf, size_t* out_size), {
+EM_JS(int32_t, load_assembly_file, (const char* assembly_name, const char* extension, byte** out_buf, size_t* out_size), {
     // This is a wrapper that JavaScript will override
     // The actual implementation is provided by Module.load_assembly_file
-    if (typeof Module.load_assembly_file == = 'function')
+    if (typeof Module.load_assembly_file == 'function')
     {
-        return Module.load_assembly_file(assembly_name, out_buf, out_size);
+        return Module.load_assembly_file(assembly_name, extension, out_buf, out_size);
     }
     console.error('load_assembly_file not implemented');
     return 1;
 });
 #else
 // For native compilation, declare it as external
-extern "C" int32_t load_assembly_file(const char* assembly_name, byte** out_buf, size_t* out_size);
+extern "C" int32_t load_assembly_file(const char* assembly_name, const char* extension, byte** out_buf, size_t* out_size);
 #endif
 
 extern "C" EMSCRIPTEN_KEEPALIVE void* allocate_bytes(size_t size)
@@ -103,16 +103,16 @@ extern "C" EMSCRIPTEN_KEEPALIVE int32_t invoke_method(metadata::RtAssembly* asse
     return 0;
 }
 
-static leanclr::RtResult<leanclr::utils::Span<byte>> local_assembly_loader(const char* assembly_name)
+static leanclr::RtResult<vm::FileData> local_assembly_loader(const char* assembly_name, const char* extension)
 {
     byte* buf = nullptr;
     size_t size = 0;
-    int32_t res = load_assembly_file(assembly_name, &buf, &size);
+    int32_t res = load_assembly_file(assembly_name, extension, &buf, &size);
     if (res != 0)
     {
         RET_ERR(RtErr::FileNotFound);
     }
-    RET_OK(leanclr::utils::Span<byte>(buf, size));
+    return vm::FileData{buf, size};
 }
 
 // Runtime initialization flag
@@ -125,7 +125,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE int32_t initialize_runtime()
         return 0; // Already initialized
     }
 
-    vm::Settings::set_assembly_loader(local_assembly_loader);
+    vm::Settings::set_file_loader(local_assembly_loader);
     auto result = vm::Runtime::initialize();
     if (result.is_err())
     {

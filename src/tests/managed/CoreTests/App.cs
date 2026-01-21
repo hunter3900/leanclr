@@ -45,6 +45,8 @@ namespace test
         {
             Debugger.Log(0, "info", "Hello, World!");
             Debugger.Log(1, "中文", "你好，世界！");
+            PrintStackTrace();
+            Throw1();
         }
 
         public static void CallCustomPInvoke()
@@ -54,7 +56,12 @@ namespace test
 
         static void Throw1()
         {
-                       throw new Exception();
+            throw new Exception();
+        }
+
+        static void PrintStackTrace()
+        {
+            Debugger.Log(0, "", Environment.StackTrace);
         }
 
         public static int Run(int a, int b)

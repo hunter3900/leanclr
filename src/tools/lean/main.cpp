@@ -28,11 +28,11 @@ using namespace leanclr;
 // Global library search directories
 static std::vector<std::string> g_lib_dirs;
 
-static RtResult<utils::Span<byte>> assembly_file_loader(const char* assembly_name)
+static RtResult<vm::FileData> assembly_file_loader(const char* assembly_name, const char* extension)
 {
     for (const auto& dir : g_lib_dirs)
     {
-        std::string file_path = dir + "/" + assembly_name + ".dll";
+        std::string file_path = dir + "/" + assembly_name + "." + extension;
         std::ifstream dll_file(file_path, std::ios::binary | std::ios::ate);
         if (!dll_file.is_open())
         {
@@ -55,7 +55,7 @@ static RtResult<utils::Span<byte>> assembly_file_loader(const char* assembly_nam
         }
         dll_file.close();
 
-        return utils::Span<byte>(dll_data, static_cast<size_t>(file_size));
+        return vm::FileData{dll_data, static_cast<size_t>(file_size)};
     }
 
     return RtErr::FileNotFound;
@@ -335,7 +335,7 @@ int main(int argc, char* argv[])
     g_lib_dirs = std::move(lib_dirs);
 
     // Set assembly loader
-    vm::Settings::set_assembly_loader(assembly_file_loader);
+    vm::Settings::set_file_loader(assembly_file_loader);
 
     // Run
     int result = run(dll_name, dll_args, entry_spec.empty() ? nullptr : &entry_spec);

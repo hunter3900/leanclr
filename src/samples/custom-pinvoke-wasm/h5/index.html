@@ -410,7 +410,8 @@
                 'mscorlib.dll.bytes',
                 'System.dll.bytes',
                 'System.Core.dll.bytes',
-                'CoreTests.dll.bytes'
+                'CoreTests.dll.bytes',
+                'CoreTests.pdb.bytes'
             ];
 
             const fileList = document.getElementById('file-list');
@@ -435,7 +436,7 @@
                     if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
                     const buffer = await response.arrayBuffer();
-                    const assemblyName = filename.replace('.dll.bytes', '');
+                    const assemblyName = filename.replace('.bytes', '');
                     assemblyCache[assemblyName] = new Uint8Array(buffer);
 
                     const fileSize = formatFileSize(buffer.byteLength);
@@ -480,12 +481,14 @@
                     }
 
                     // 实现 load_assembly_file 回调
-                    Module.load_assembly_file = function(namePtr, bufPtr, sizePtr) {
+                    Module.load_assembly_file = function(namePtr, extensionPtr, bufPtr, sizePtr) {
                         const assemblyName = readCString(namePtr);
-                        log(`📂 正在加载程序集: ${assemblyName}`, 'info');
+                        const extension = readCString(extensionPtr);
+                        const fileName = extension ? `${assemblyName}.${extension}` : assemblyName;
+                        log(`📂 正在加载文件: ${fileName}`, 'info');
 
-                        if (assemblyCache[assemblyName]) {
-                            const data = assemblyCache[assemblyName];
+                        if (assemblyCache[fileName]) {
+                            const data = assemblyCache[fileName];
                             try {
                                 // 在 WASM 内存中分配空间（使用 runtime allocate，内部调用 _malloc）
                                 const ptr = Module._malloc(data.length);
@@ -504,7 +507,7 @@
                                 return 1;
                             }
                         } else {
-                            log(`   ✗ 程序集未找到: ${assemblyName}`, 'error');
+                            log(`   ✗ 文件未找到: ${fileName}`, (extension == 'dll' ? 'error' : 'warning'));
                             return 1;
                         }
                     };
