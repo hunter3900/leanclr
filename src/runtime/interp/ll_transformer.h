@@ -20,7 +20,7 @@ struct GeneralInst;
 struct BasicBlock
 {
     const hl::BasicBlock* hl_bb;
-    size_t ir_offset;
+    int32_t ir_offset;
     utils::NotFreeList<const GeneralInst*> insts;
     BasicBlock* next_bb;
 
@@ -39,8 +39,9 @@ struct GeneralInst
     InstArgData dst_or_ret;
     interp::IRExtraValue extra_data;
     interp::IRExtraValue extra_data2;
-    size_t ir_offset;
     size_t resolved_data_idx;
+    int32_t il_offset;
+    int32_t ir_offset;
 
     GeneralInst(const hl::GeneralInst& hl_inst);
 
@@ -54,13 +55,24 @@ struct GeneralInst
         code = opcode;
     }
 
-    void set_ir_offset(size_t offset)
+    int32_t get_il_offset() const
     {
-        ir_offset = offset;
+        return il_offset;
     }
-    size_t get_ir_offset() const
+
+    void set_il_offset(int32_t offset)
+    {
+        il_offset = offset;
+    }
+
+    int32_t get_ir_offset() const
     {
         return ir_offset;
+    }
+
+    void set_ir_offset(int32_t offset)
+    {
+        ir_offset = offset;
     }
 
     const interp::Variable* get_var_arg1() const

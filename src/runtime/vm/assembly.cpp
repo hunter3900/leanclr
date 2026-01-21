@@ -10,6 +10,7 @@
 #include "rt_array.h"
 #include "class.h"
 #include "reflection.h"
+#include "log/internal_logger.h"
 
 namespace leanclr::vm
 {
@@ -40,15 +41,27 @@ RtResult<metadata::RtAssembly*> Assembly::load_by_name(const char* name)
         RET_OK(mod->get_assembly());
     }
 
-    auto loader = vm::Settings::get_assembly_loader();
-    if (!loader)
+    auto file_loader = vm::Settings::get_file_loader();
+    if (!file_loader)
     {
         RET_ERR(RtErr::FileNotFound);
     }
-    auto result = loader(name);
-    DECLARING_AND_UNWRAP_OR_RET_ERR_ON_FAIL2(utils::Span<byte>, dllData, result);
+    auto result = file_loader(name, "dll");
+    DECLARING_AND_UNWRAP_OR_RET_ERR_ON_FAIL2(FileData, dllData, result);
 
-    return load_from_data(dllData);
+    utils::ByteSpan symbolData;
+
+    auto pdb_ret = file_loader(name, "pdb");
+    if (pdb_ret.is_ok())
+    {
+        auto& pdb_data = pdb_ret.unwrap();
+        symbolData = utils::ByteSpan(const_cast<uint8_t*>(pdb_data.data), pdb_data.length);
+    }
+    else
+    {
+        log::InternalLogger::debug("PDB file not found for assembly");
+    }
+    return load_from_data(utils::ByteSpan(const_cast<uint8_t*>(dllData.data), dllData.length), symbolData.data() ? &symbolData : nullptr);
 }
 
 RtResult<metadata::RtAssembly*> Assembly::load_by_name(RtAppDomain* app_domain, const char* name_no_ext, RtObject* evidence, bool ref_only,
@@ -58,7 +71,7 @@ RtResult<metadata::RtAssembly*> Assembly::load_by_name(RtAppDomain* app_domain, 
     return load_by_name(name_no_ext);
 }
 
-RtResult<metadata::RtAssembly*> Assembly::load_from_data(utils::Span<byte> dllData)
+RtResult<metadata::RtAssembly*> Assembly::load_from_data(const utils::Span<byte> dllData, const utils::Span<byte>* ptr_symbol_data)
 {
     alloc::MemPool* pool = alloc::GeneralAllocation::new_any<alloc::MemPool>();
     utils::UniquePtr<alloc::MemPool> poolGuard(pool);
@@ -70,8 +83,26 @@ RtResult<metadata::RtAssembly*> Assembly::load_from_data(utils::Span<byte> dllDa
     RET_ERR_ON_FAIL(image->load_streams());
     RET_ERR_ON_FAIL(image->load_tables(*pool));
 
+    metadata::PdbImage* pdbImage;
+    if (ptr_symbol_data)
+    {
+        pdbImage = alloc::GeneralAllocation::new_any<metadata::PdbImage>(*pool, ptr_symbol_data->data(), ptr_symbol_data->size());
+        auto ret_load = pdbImage->load();
+        if (ret_load.is_err())
+        {
+            log::InternalLogger::error("Failed to load PDB image. Please use portable pdb format. ignoring symbol data");
+            // FIXME: free symbol_data.data
+            // alloc::GeneralAllocation::free(pdbImage);
+            pdbImage = nullptr;
+        }
+    }
+    else
+    {
+        pdbImage = nullptr;
+    };
+
     metadata::RtAssembly* ass = alloc::GeneralAllocation::malloc_any_zeroed<metadata::RtAssembly>();
-    metadata::RtModuleDef* mod = alloc::GeneralAllocation::new_any<metadata::RtModuleDef>(ass, *image, *pool);
+    metadata::RtModuleDef* mod = alloc::GeneralAllocation::new_any<metadata::RtModuleDef>(ass, *image, pdbImage, *pool);
     ass->mod = mod;
     RET_ERR_ON_FAIL(mod->load());
 
@@ -94,7 +125,16 @@ RtResult<metadata::RtAssembly*> Assembly::load_from_data(RtAppDomain* app_domain
     {
         RET_ERR(RtErr::ArgumentNull);
     }
-    return load_from_data(utils::Span<uint8_t>(Array::get_array_data_start_as<uint8_t>(dll_data), Array::get_array_length(dll_data)));
+    utils::Span<byte> dll_span(Array::get_array_data_start_as<uint8_t>(dll_data), Array::get_array_length(dll_data));
+    if (symbol_data)
+    {
+        utils::Span<byte> symbol_span(Array::get_array_data_start_as<uint8_t>(symbol_data), Array::get_array_length(symbol_data));
+        return load_from_data(dll_span, &symbol_span);
+    }
+    else
+    {
+        return load_from_data(dll_span, nullptr);
+    }
 }
 
 RtResult<RtArray*> Assembly::get_types(metadata::RtAssembly* ass, bool exported_only)

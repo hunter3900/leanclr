@@ -82,6 +82,11 @@ class BinaryReader
         return true;
     }
 
+    bool not_empty() const
+    {
+        return _index < _length;
+    }
+
     bool is_remaining(size_t count) const
     {
         return _index + count <= _length;
@@ -292,6 +297,39 @@ class BinaryReader
             return true;
         }
         return false;
+    }
+
+    bool try_read_compressed_int32(int32_t& out_value)
+    {
+        uint32_t unsignedValue;
+        if (!try_read_compressed_uint32(unsignedValue))
+        {
+            return false;
+        }
+        uint32_t value = unsignedValue >> 1;
+        if (!(unsignedValue & 0x1))
+        {
+            out_value = static_cast<int32_t>(value);
+            return true;
+        }
+        if (value < 0x40)
+        {
+            out_value = static_cast<int32_t>(value - 0x40);
+            return true;
+        }
+        if (value < 0x2000)
+        {
+            out_value = static_cast<int32_t>(value - 0x2000);
+            return true;
+        }
+        if (value < 0x10000000)
+        {
+            out_value = static_cast<int32_t>(value - 0x10000000);
+            return true;
+        }
+        assert(value < 0x20000000);
+        out_value = static_cast<int32_t>(value - 0x20000000);
+        return true;
     }
 };
 } // namespace leanclr::utils

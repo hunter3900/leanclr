@@ -11,6 +11,7 @@ set(RUNTIME_DIRS
     icalls
     interp
     intrinsics
+    log
     metadata
     misc
     platform

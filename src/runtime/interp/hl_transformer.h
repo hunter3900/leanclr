@@ -53,14 +53,26 @@ struct GeneralInst
     InstArgData dst_or_ret;
     il::OpCodePrefix prefix;
     IRExtraValue extra_data;
+    int32_t il_offset;
 
     OpCodeEnum get_opcode() const
     {
         return code;
     }
+
     void set_opcode(OpCodeEnum opcode)
     {
         code = opcode;
+    }
+
+    int32_t get_il_offset() const
+    {
+        return il_offset;
+    }
+
+    void set_il_offset(int32_t offset)
+    {
+        il_offset = offset;
     }
 
     const Variable* get_var_arg1() const
@@ -605,5 +617,7 @@ class Transformer
     metadata::RtClass* _constrained_class{nullptr};
     bool _not_retset_prefix_after_cur_il{false};
     utils::HashMap<uint32_t, metadata::RtRuntimeHandle> _runtime_handle_cache;
+
+    int32_t _cur_il_offset{-1};
 };
 } // namespace leanclr::interp::hl

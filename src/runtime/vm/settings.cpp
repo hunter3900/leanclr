@@ -5,7 +5,7 @@ namespace leanclr::vm
 {
 static void default_debugger_log_function(int32_t level, const uint16_t* category, size_t category_len, const uint16_t* message, size_t message_len);
 
-static AssemblyLoaderFunc g_assembly_loader = nullptr;
+static FileLoader g_file_loader = nullptr;
 static InternalFunctionInitializer g_internal_functions_initializer = nullptr;
 static int32_t g_cmd_argc = 0;
 static const char** g_cmd_argv = nullptr;
@@ -40,14 +40,14 @@ static void default_debugger_log_function(int32_t level, const uint16_t* categor
     printf("%s\n", g_debugger_log_buffer.as_cstr());
 }
 
-AssemblyLoaderFunc Settings::get_assembly_loader()
+FileLoader Settings::get_file_loader()
 {
-    return g_assembly_loader;
+    return g_file_loader;
 }
 
-void Settings::set_assembly_loader(AssemblyLoaderFunc loader)
+void Settings::set_file_loader(FileLoader loader)
 {
-    g_assembly_loader = loader;
+    g_file_loader = loader;
 }
 
 void Settings::set_internal_functions_initializer(InternalFunctionInitializer initializer)

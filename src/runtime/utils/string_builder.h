@@ -175,6 +175,11 @@ class StringBuilder
         return *this;
     }
 
+    const char* get_data() const
+    {
+        return _buf;
+    }
+
     char* get_mut_data() const
     {
         return _buf;

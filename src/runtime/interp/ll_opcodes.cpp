@@ -1752,7 +1752,7 @@ uint8_t* OpCodes::write_instruction_to_data(uint8_t* codes, const GeneralInst& i
         ir->index = (uint16_t)inst.get_var_arg1_eval_stack_idx();
         ir->num_targets = (uint32_t)inst.get_num_targets();
         auto targetsInfo = inst.get_switch_targets();
-        int32_t self_ir_offset = (int32_t)inst.get_ir_offset();
+        int32_t self_ir_offset = inst.get_ir_offset();
         int32_t* target_offsets = (int32_t*)(ir + 1);
         for (int i = 0; i < targetsInfo.count; i++)
         {

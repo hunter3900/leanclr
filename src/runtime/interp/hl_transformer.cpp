@@ -269,6 +269,7 @@ GeneralInst* Transformer::create_inst(OpCodeEnum opcode)
 {
     GeneralInst* ir_inst = _pool->malloc_any_zeroed<GeneralInst>();
     ir_inst->set_opcode(opcode);
+    ir_inst->set_il_offset(_cur_il_offset);
     return ir_inst;
 }
 
@@ -2359,6 +2360,7 @@ RtResultVoid Transformer::transform_body()
         for (size_t il_offset_cur = bb->il_begin_offset, il_offset_end = bb->il_end_offset; il_offset_cur < il_offset_end;)
         {
             il::OpCodeValue opcode = *(const il::OpCodeValue*)(codes_begin + il_offset_cur);
+            _cur_il_offset = il_offset_cur;
             if (!_not_retset_prefix_after_cur_il)
             {
                 clear_prefix();

@@ -8,6 +8,7 @@
 #include "utils/mem_op.h"
 #include "alloc/mem_pool.h"
 #include "cli_metadata.h"
+#include "utils/binary_reader.h"
 
 namespace leanclr::utils
 {
@@ -163,6 +164,8 @@ class CliImage
     {
         return metadata_length;
     }
+
+    RtResult<utils::BinaryReader> get_decoded_blob_reader(uint32_t index) const;
 
     // Row read methods - declarations only, implementations in cpp
     std::optional<RowModule> read_module(uint32_t row_index) const;

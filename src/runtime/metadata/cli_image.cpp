@@ -191,7 +191,7 @@ RtResultVoid CliImage::load_tables(alloc::MemPool& pool)
     if (!reader.try_read_u64(valid_table_bits))
         return RtErr::BadImageFormat;
 
-    if ((valid_table_bits & ~((1ULL << MAX_TABLE_INDEX) - 1)) != 0)
+    if ((valid_table_bits & ~((1ULL << MAX_TABLE_COUNT) - 1)) != 0)
         return RtErr::BadImageFormat;
 
     uint32_t valid_table_count = utils::MemOp::get_not_zero_bit_count(valid_table_bits);
@@ -213,7 +213,7 @@ RtResultVoid CliImage::load_tables(alloc::MemPool& pool)
 
     // Initialize valid tables and row counts
     uint32_t cur_valid_table_index = 0;
-    for (size_t table_index = 0; table_index < MAX_TABLE_INDEX; ++table_index)
+    for (size_t table_index = 0; table_index < MAX_TABLE_COUNT; ++table_index)
     {
         if ((valid_table_bits & (1ULL << table_index)) != 0)
         {
@@ -1116,6 +1116,27 @@ std::optional<uint32_t> CliImage::rva_to_image_offset(uint32_t rva) const
         }
     }
     return std::nullopt;
+}
+
+RtResult<utils::BinaryReader> CliImage::get_decoded_blob_reader(uint32_t index) const
+{
+    auto& heap = blob_heap;
+    if (index >= heap.size)
+    {
+        RET_ERR(RtErr::BadImageFormat);
+    }
+    auto data = heap.data + index;
+    uint32_t blob_size = 0;
+    size_t size_length = 0;
+    if (!utils::BinaryReader::try_decode_compressed_uint32(data, heap.size - index, blob_size, size_length))
+    {
+        RET_ERR(RtErr::BadImageFormat);
+    }
+    if (index + size_length + blob_size > heap.size)
+    {
+        RET_ERR(RtErr::BadImageFormat);
+    }
+    RET_OK(utils::BinaryReader(data + size_length, blob_size));
 }
 
 std::optional<RowModule> CliImage::read_module(uint32_t row_index) const

@@ -22,11 +22,12 @@ GeneralInst::GeneralInst(const hl::GeneralInst& hl_inst)
     arg3 = hl_inst.arg3;
     dst_or_ret = hl_inst.dst_or_ret;
     extra_data = hl_inst.extra_data;
-    extra_data2.value = 0;
 #ifndef NDEBUG
-    ir_offset = 0;
+    extra_data2.value = 0;
     resolved_data_idx = 0;
+    ir_offset = 0;
 #endif
+    il_offset = hl_inst.get_il_offset();
 }
 
 RtResult<BasicBlock*> Transformer::translate_hl_basic_to_ll_basic(const hl::BasicBlock* hl_bb)
@@ -2205,13 +2206,15 @@ RtResultVoid Transformer::build_codes(RtInterpMethodInfo* interp_method)
     size_t total_ir_size = 0;
     BasicBlock* cur_bb = _bb_head;
 
+    size_t total_ir_count = 0;
     for (BasicBlock* cur_bb = _bb_head; cur_bb != nullptr; cur_bb = cur_bb->next_bb)
     {
         cur_bb->ir_offset = total_ir_size;
+        total_ir_count += cur_bb->insts.size();
         for (const GeneralInst* inst : cur_bb->insts)
         {
             GeneralInst* mutable_inst = const_cast<GeneralInst*>(inst);
-            mutable_inst->set_ir_offset(total_ir_size);
+            mutable_inst->set_ir_offset(static_cast<int32_t>(total_ir_size));
             total_ir_size += ll::OpCodes::get_instruction_size(inst->get_opcode(), *inst);
         }
     }
@@ -2222,13 +2225,32 @@ RtResultVoid Transformer::build_codes(RtInterpMethodInfo* interp_method)
     uint8_t* codes = (uint8_t*)mod->get_mem_pool().calloc_any<uint8_t>(total_ir_size);
     interp_method->codes = codes;
 
+    metadata::PdbImage* pdb_image = mod->get_pdb_image();
+
     uint8_t* codes_cur = codes;
-    for (BasicBlock* cur_bb = _bb_head; cur_bb != nullptr; cur_bb = cur_bb->next_bb)
+    if (pdb_image == nullptr)
     {
-        for (const GeneralInst* inst : cur_bb->insts)
+        for (BasicBlock* cur_bb = _bb_head; cur_bb != nullptr; cur_bb = cur_bb->next_bb)
         {
-            codes_cur = ll::OpCodes::write_instruction_to_data(codes_cur, *inst);
+            for (const GeneralInst* inst : cur_bb->insts)
+            {
+                codes_cur = ll::OpCodes::write_instruction_to_data(codes_cur, *inst);
+            }
         }
+    }
+    else
+    {
+        metadata::IR2ILMapEntry* ir2il_map_entries = ir2il_map_entries = mod->get_mem_pool().calloc_any<metadata::IR2ILMapEntry>(total_ir_count);
+        size_t ir_index = 0;
+        for (BasicBlock* cur_bb = _bb_head; cur_bb != nullptr; cur_bb = cur_bb->next_bb)
+        {
+            for (const GeneralInst* inst : cur_bb->insts)
+            {
+                codes_cur = ll::OpCodes::write_instruction_to_data(codes_cur, *inst);
+                ir2il_map_entries[ir_index++] = {inst->get_il_offset(), inst->get_ir_offset()};
+            }
+        }
+        pdb_image->add_ir2il_map_for_method(_hl_transformer.get_method_info(), { utils::Span<metadata::IR2ILMapEntry>{ir2il_map_entries, total_ir_count}});
     }
 
     assert(codes_cur == codes + total_ir_size);

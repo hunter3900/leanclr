@@ -7,7 +7,14 @@
 namespace leanclr::vm
 {
 
-typedef RtResult<utils::Span<byte>> (*AssemblyLoaderFunc)(const char* assembly_name);
+struct FileData
+{
+    const uint8_t* data;
+    size_t length;
+};
+
+typedef RtResult<FileData> (*FileLoader)(const char* assembly_name, const char* extension);
+
 typedef void (*InternalFunctionInitializer)();
 typedef void (*DebuggerLogFunc)(int32_t level, const uint16_t* category, size_t category_len, const uint16_t* message, size_t message_len);
 typedef void (*ReportUnhandledExceptionFunc)(RtException* exception);
@@ -15,8 +22,8 @@ typedef void (*ReportUnhandledExceptionFunc)(RtException* exception);
 class Settings
 {
   public:
-    static void set_assembly_loader(AssemblyLoaderFunc loader);
-    static AssemblyLoaderFunc get_assembly_loader();
+    static FileLoader get_file_loader();
+    static void set_file_loader(FileLoader loader);
 
     static void set_command_line_arguments(int32_t argc, const char** argv);
     static void get_command_line_arguments(int32_t& argc, const char**& argv);

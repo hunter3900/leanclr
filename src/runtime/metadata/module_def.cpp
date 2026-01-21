@@ -92,27 +92,6 @@ RtResult<const uint8_t*> RtModuleDef::get_blob(uint32_t index) const
     RET_ERR(RtErr::BadImageFormat);
 }
 
-RtResult<utils::BinaryReader> RtModuleDef::get_decoded_blob_reader(uint32_t index) const
-{
-    auto& heap = _cliImage.get_blob_heap();
-    if (index >= heap.size)
-    {
-        RET_ERR(RtErr::BadImageFormat);
-    }
-    auto data = heap.data + index;
-    uint32_t blob_size = 0;
-    size_t size_length = 0;
-    if (!utils::BinaryReader::try_decode_compressed_uint32(data, heap.size - index, blob_size, size_length))
-    {
-        RET_ERR(RtErr::BadImageFormat);
-    }
-    if (index + size_length + blob_size > heap.size)
-    {
-        RET_ERR(RtErr::BadImageFormat);
-    }
-    RET_OK(utils::BinaryReader(data + size_length, blob_size));
-}
-
 RtResult<vm::RtString*> RtModuleDef::get_user_string(uint32_t index)
 {
     auto it = _userStringMap.find(index);

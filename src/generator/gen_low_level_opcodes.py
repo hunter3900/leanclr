@@ -116,7 +116,7 @@ def gen_low_level_opcode_write_to_data(low_level_opcodes):
         match opcode.name:
             case "Switch":
                 lines.append(f"{padding}    auto targetsInfo = inst.get_switch_targets();")
-                lines.append(f"{padding}    int32_t self_ir_offset = (int32_t)inst.get_ir_offset();")
+                lines.append(f"{padding}    int32_t self_ir_offset = inst.get_ir_offset();")
                 lines.append(f"{padding}    int32_t* target_offsets = (int32_t*)(ir + 1);")
                 lines.append(f"{padding}    for (int i = 0; i < targetsInfo.count; i++)")
                 lines.append(f"{padding}    {{")

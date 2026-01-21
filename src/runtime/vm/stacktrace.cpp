@@ -51,6 +51,23 @@ RtResultVoid StackTrace::setup_trace_ips(RtException* ex)
         const interp::InterpFrame* frame = trace_frames[i];
         UNWRAP_OR_RET_ERR_ON_FAIL(stackframe->method, Reflection::get_method_reflection_object(frame->method, frame->method->parent));
         stackframe->method_index = Method::get_method_index_in_class(frame->method);
+        metadata::PdbImage* pdb_image = frame->method->parent->image->get_pdb_image();
+        if (pdb_image)
+        {
+            int32_t ir_offset = static_cast<int32_t>(frame->ip - frame->method->interp_data->codes);
+            const char* pdb_file_name = nullptr;
+            pdb_image->get_debug_info_for_method(frame->method, ir_offset, &stackframe->il_offset, &pdb_file_name, &stackframe->line, &stackframe->column);
+            stackframe->filename = pdb_file_name ? String::create_string_from_utf8cstr(pdb_file_name) : nullptr;
+
+        }
+        else
+        {
+            stackframe->il_offset = -1;
+            stackframe->filename = nullptr;
+            stackframe->line = 0;
+            stackframe->column = 0;
+        }
+        stackframe->native_offset = -1;
         Array::set_array_data_at<RtObject*>(trace_ips, frame_count - 1 - i, stackframe_obj);
     }
     ex->trace_ips = trace_ips;
@@ -73,14 +90,34 @@ RtResult<bool> StackTrace::get_frame_info(int32_t skip, bool need_file_info, RtR
     const interp::InterpFrame* frame = &frames[frame_count - 1 - skip];
     UNWRAP_OR_RET_ERR_ON_FAIL(*method, Reflection::get_method_reflection_object(frame->method, frame->method->parent));
 
-    *il_offset = -1;
-    *native_offset = -1;
-    if (need_file_info)
+    int32_t ir_offset = static_cast<int32_t>(frame->ip - frame->method->interp_data->codes);
+
+    metadata::PdbImage* pdb_image = frame->method->parent->image->get_pdb_image();
+    if (pdb_image)
     {
-        *file_name = String::get_empty_string();
-        *line_number = 0;
-        *column_number = 0;
+        const char* pdb_file_name = nullptr;
+        int32_t pdb_line_number = 0;
+        int32_t pdb_column_number = 0;
+        pdb_image->get_debug_info_for_method(frame->method, ir_offset, il_offset, &pdb_file_name,
+                                             &pdb_line_number, &pdb_column_number);
+        if (need_file_info)
+        {
+            *file_name = pdb_file_name ? String::create_string_from_utf8cstr(pdb_file_name) : nullptr;
+            *line_number = pdb_line_number;
+            *column_number = pdb_column_number;
+        }
     }
+    else
+    {
+        *il_offset = -1;
+        if (need_file_info)
+        {
+            *file_name = nullptr;
+            *line_number = 0;
+            *column_number = 0;
+        }
+    }
+    *native_offset = -1;
     RET_OK(true);
 }
 
