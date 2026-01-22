@@ -58,7 +58,6 @@ RtResultVoid StackTrace::setup_trace_ips(RtException* ex)
             const char* pdb_file_name = nullptr;
             pdb_image->get_debug_info_for_method(frame->method, ir_offset, &stackframe->il_offset, &pdb_file_name, &stackframe->line, &stackframe->column);
             stackframe->filename = pdb_file_name ? String::create_string_from_utf8cstr(pdb_file_name) : nullptr;
-
         }
         else
         {
@@ -98,8 +97,7 @@ RtResult<bool> StackTrace::get_frame_info(int32_t skip, bool need_file_info, RtR
         const char* pdb_file_name = nullptr;
         int32_t pdb_line_number = 0;
         int32_t pdb_column_number = 0;
-        pdb_image->get_debug_info_for_method(frame->method, ir_offset, il_offset, &pdb_file_name,
-                                             &pdb_line_number, &pdb_column_number);
+        pdb_image->get_debug_info_for_method(frame->method, ir_offset, il_offset, &pdb_file_name, &pdb_line_number, &pdb_column_number);
         if (need_file_info)
         {
             *file_name = pdb_file_name ? String::create_string_from_utf8cstr(pdb_file_name) : nullptr;

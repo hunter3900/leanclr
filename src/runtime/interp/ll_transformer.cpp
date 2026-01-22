@@ -2250,7 +2250,7 @@ RtResultVoid Transformer::build_codes(RtInterpMethodInfo* interp_method)
                 ir2il_map_entries[ir_index++] = {inst->get_il_offset(), inst->get_ir_offset()};
             }
         }
-        pdb_image->add_ir2il_map_for_method(_hl_transformer.get_method_info(), { utils::Span<metadata::IR2ILMapEntry>{ir2il_map_entries, total_ir_count}});
+        pdb_image->add_ir2il_map_for_method(_hl_transformer.get_method_info(), {utils::Span<metadata::IR2ILMapEntry>{ir2il_map_entries, total_ir_count}});
     }
 
     assert(codes_cur == codes + total_ir_size);

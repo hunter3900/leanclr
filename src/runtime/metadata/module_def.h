@@ -102,8 +102,9 @@ class RtModuleDef
 {
   public:
     RtModuleDef(RtAssembly* assembly, const CliImage& cliImage, PdbImage* pdbImage, alloc::MemPool& pool)
-        : _assembly(assembly), _cliImage(cliImage), _pdbImage(pdbImage), _pool(pool), _name(nullptr), _nameNoExt(nullptr), _classes(nullptr), _classCount(0), _methods(nullptr),
-          _methodCount(0), _id(0), _refOnly(false), _referenceAssemblies(nullptr), _referenceAssemblyCount(0), _corLib(false), _moduleCctorFinished(false)
+        : _assembly(assembly), _cliImage(cliImage), _pdbImage(pdbImage), _pool(pool), _name(nullptr), _nameNoExt(nullptr), _classes(nullptr), _classCount(0),
+          _methods(nullptr), _methodCount(0), _id(0), _refOnly(false), _referenceAssemblies(nullptr), _referenceAssemblyCount(0), _corLib(false),
+          _moduleCctorFinished(false)
     {
     }
 

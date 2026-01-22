@@ -767,8 +767,6 @@ const metadata::RtFieldInfo* Class::get_field_for_name(metadata::RtClass* klass,
     return nullptr;
 }
 
-
-
 const metadata::RtMethodInfo* Class::get_method_for_name(metadata::RtClass* klass, const char* name, bool search_parent)
 {
     metadata::RtClass* cur = klass;

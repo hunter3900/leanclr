@@ -76,17 +76,22 @@ RtResultVoid SystemRuntimeRuntimeImports::ecvt_s(uint8_t* buffer, int32_t size, 
     buffer[size - 1] = 0;
 #else
     int written = snprintf(reinterpret_cast<char*>(buffer), size, "%.*e", digits, value);
-    if (written < 0 || written >= size) {
+    if (written < 0 || written >= size)
+    {
         RET_ERR(RtErr::Argument);
     }
     // 解析小数点和符号
     const char* buf = reinterpret_cast<const char*>(buffer);
     *sign = (buf[0] == '-') ? 1 : 0;
     const char* e_ptr = strchr(buf, 'e');
-    if (!e_ptr) e_ptr = strchr(buf, 'E');
-    if (!e_ptr) {
+    if (!e_ptr)
+        e_ptr = strchr(buf, 'E');
+    if (!e_ptr)
+    {
         *decpt = 0;
-    } else {
+    }
+    else
+    {
         int exp = atoi(e_ptr + 1);
         *decpt = exp + 1;
     }

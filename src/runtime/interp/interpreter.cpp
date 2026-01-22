@@ -3712,8 +3712,7 @@ method_start:
                 RtStackObject* original_frame_base = eval_stack_base + ir->frame_base;
                 const size_t value_stack_objects = InterpDefs::get_stack_object_size_by_byte_size(klass->instance_size_without_header);
                 RtStackObject* final_frame_base = original_frame_base + value_stack_objects;
-                std::memmove(final_frame_base + 1, original_frame_base,
-                             static_cast<size_t>(ir->total_params_stack_object_size) * sizeof(RtStackObject));
+                std::memmove(final_frame_base + 1, original_frame_base, static_cast<size_t>(ir->total_params_stack_object_size) * sizeof(RtStackObject));
                 final_frame_base->ptr = original_frame_base;
                 std::memset(original_frame_base, 0, value_stack_objects * sizeof(RtStackObject));
                 ENTER_INTERP_FRAME(ctor, ir->frame_base + value_stack_objects, reinterpret_cast<const uint8_t*>(ir + 1));

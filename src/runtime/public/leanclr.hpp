@@ -112,7 +112,7 @@ class RuntimeApi
     static const metadata::RtTypeSig* get_class_byref_typesig(metadata::RtClass* klass);
     static metadata::RtClass* get_class_parent(metadata::RtClass* klass);
     static RtResultVoid get_class_interfaces(metadata::RtClass* klass, const metadata::RtClass**& interfaces, size_t& count);
-    
+
     static metadata::RtClass* get_class_enclosing_class(metadata::RtClass* klass);
     static RtResultVoid get_class_nested_classes(metadata::RtClass* klass, const metadata::RtClass**& nested_classes, size_t& count);
 

@@ -52,7 +52,8 @@ extern "C"
     LEANCLR_API const char* leanclr_get_module_name_noext(LeanclrModuleDef* mod);
 
     LEANCLR_API size_t leanclr_get_class_count(LeanclrModuleDef* mod);
-    LEANCLR_API void leanclr_get_classes(LeanclrModuleDef* mod, bool export_only, LeanclrClass**& class_buf, size_t& class_buf_capacity, LeanclrException** out_exception);
+    LEANCLR_API void leanclr_get_classes(LeanclrModuleDef* mod, bool export_only, LeanclrClass**& class_buf, size_t& class_buf_capacity,
+                                         LeanclrException** out_exception);
     LEANCLR_API LeanclrClass* leanclr_get_class_by_name(LeanclrModuleDef* mod, const char* full_name, bool ignore_case, LeanclrException** out_exception);
 
     LEANCLR_API LeanclrModuleDef* leanclr_get_class_module(LeanclrClass* klass);
