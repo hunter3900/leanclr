@@ -34,5 +34,6 @@ if errorlevel 1 (
     exit /b 1
 )
 copy /Y CoreTests\bin\%CONFIG%\CoreTests.dll .\MiscDlls\
+copy /Y CorlibTests\bin\%CONFIG%\CorlibTests.dll .\MiscDlls\
 popd
 echo All tests built successfully.
