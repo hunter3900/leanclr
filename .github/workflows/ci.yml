@@ -1,0 +1,41 @@
+name: CI Test
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake g++
+
+      - name: Make scripts executable
+        run: |
+          chmod +x src/tests/build_all.sh
+          chmod +x src/tests/run_tests.sh
+
+      - name: Build all tests
+        run: |
+          cd src/tests
+          ./build_all.sh
+
+      - name: Run tests
+        run: |
+          cd src/tests
+          ./run_tests.sh
+
+      - name: Notify Feishu on failure
+        if: failure()
+        run: |
+          MSG="{\"msg_type\":\"text\",\"content\":{\"text\":\"[CI] Automated test failed.\\nRepo: ${{ github.repository }}\\nCommit: ${{ github.sha }}\\nWorkflow: ${{ github.workflow }}\\nJob: ${{ github.job }}\\nPlease check and fix it.\"}}"
+          curl -X POST -H "Content-Type: application/json" -d "$MSG" "${{ secrets.FEISHU_ROBOT_NOTIFY_URL }}"
