@@ -71,7 +71,7 @@ static void setup_default_lib_dirs()
     {
         std::string library_dir = cur_dir.substr(0, pos) + "src/libraries";
         g_lib_dirs.push_back(library_dir + "/dotnetframework4.x"); // Example additional directory
-        std::string test_dir = cur_dir.substr(0, pos) + "/src/tests/managed";
+        std::string test_dir = cur_dir.substr(0, pos) + "src/tests/managed";
         // g_lib_dirs.push_back(test_dir + "/ILTests/bin/Debug");
         g_lib_dirs.push_back(test_dir + "/CoreTests/bin/Debug");
         g_lib_dirs.push_back(test_dir + "/CorlibTests/bin/Debug");
@@ -229,7 +229,7 @@ RtResultVoid init_customattributes(metadata::RtModuleDef* mod)
     for (uint32_t rid = 1, count = cli_image.get_table_row_num(metadata::TableType::CustomAttribute); rid <= count; rid++)
     {
         // std::cout << "Initializing CustomAttribute RID: " << rid << std::endl;
-        auto& opt_ca = mod->get_custom_attribute_raw_data(rid);
+        auto opt_ca = mod->get_custom_attribute_raw_data(rid);
         assert(opt_ca.is_ok());
         auto& data = opt_ca.unwrap();
         DECLARING_AND_UNWRAP_OR_RET_ERR_ON_FAIL(vm::RtObject*, ca_obj, vm::CustomAttribute::read_custom_attribute(mod, &data));
