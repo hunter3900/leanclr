@@ -23,6 +23,7 @@ jobs:
         run: |
           chmod +x src/tests/build_all.sh
           chmod +x src/tests/run_tests.sh
+          chmod +x src/tests/basic_test_runner/build.sh
 
       - name: Build all tests
         run: |
