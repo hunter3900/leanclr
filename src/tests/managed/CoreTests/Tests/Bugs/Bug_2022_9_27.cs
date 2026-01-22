@@ -36,7 +36,6 @@ namespace Tests.Bugs.Bug20220927
 
     struct C : IY
     {
-        public int X, Y;
 
         string IY.Foo()
         {
@@ -57,7 +56,6 @@ namespace Tests.Bugs.Bug20220927
 
     struct D : IZ
     {
-        public int X, Y;
 
         string IZ.Bar()
         {

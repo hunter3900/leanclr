@@ -15,11 +15,21 @@ namespace Tests.CSharp
         class ClassA
         {
             public int x;
+
+            public static int GetX(ClassA a)
+            {
+                return a.x;
+            }
         }
 
         struct StructA
         {
             public int x;
+
+            public static int GetX(StructA a)
+            {
+                return a.x;
+            }
         }
 
         int GetFirstArgX(int a, ClassA b)

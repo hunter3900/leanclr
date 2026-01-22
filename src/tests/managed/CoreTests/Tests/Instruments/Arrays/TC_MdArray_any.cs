@@ -43,6 +43,11 @@ namespace Tests.Instruments.Arrays
         {
             public int x1;
             public string x2;
+
+            static public string GetX2(StructWithRef x)
+            {
+                return x.x2;
+            }
         }
 
         [UnitTest]

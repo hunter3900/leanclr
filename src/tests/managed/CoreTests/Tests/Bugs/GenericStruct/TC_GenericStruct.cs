@@ -43,6 +43,22 @@ namespace Tests.Bugs
 
                 Length = length;
             }
+
+            public T GetValue(int index)
+            {
+                switch (index)
+                {
+                case 0: return item0;
+                case 1: return item1;
+                case 2: return item2;
+                case 3: return item3;
+                case 4: return item4;
+                case 5: return item5;
+                case 6: return item6;
+                case 7: return item7;
+                default: return default;
+                }
+            }
         }
 
         /// <summary>
