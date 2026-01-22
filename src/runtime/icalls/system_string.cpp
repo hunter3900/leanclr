@@ -1,3 +1,4 @@
+#include <limits>
 #include "system_string.h"
 
 #include "icall_base.h"

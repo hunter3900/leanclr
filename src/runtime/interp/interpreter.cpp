@@ -1,3 +1,6 @@
+#include <cmath>
+#include <limits>
+
 #include "interpreter.h"
 #include "vm/class.h"
 #include "metadata/module_def.h"

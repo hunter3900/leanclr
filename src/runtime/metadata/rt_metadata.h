@@ -636,7 +636,7 @@ constexpr uint32_t RT_MAX_FIELD_COUNT = 0xFFFF;
 constexpr uint32_t RT_MAX_PROPERTY_COUNT = 0xFFFF;
 constexpr uint32_t RT_MAX_EVENT_COUNT = 0xFFFF;
 constexpr uint32_t RT_MAX_VTABLE_COUNT = 0xFFFF;
-constexpr uint8_t RT_MAX_INTERFACE_COUNT = 0xFFFF;
+constexpr uint16_t RT_MAX_INTERFACE_COUNT = 0xFFFF;
 constexpr uint32_t RT_MAX_NESTED_CLASS_COUNT = 0xFFFF;
 constexpr uint8_t RT_MAX_ARRAY_RANK = 0x32;
 
