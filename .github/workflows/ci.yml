@@ -28,12 +28,12 @@ jobs:
       - name: Build all tests
         run: |
           cd src/tests
-          ./build_all.sh
+          ./build_all.sh Release
 
       - name: Run tests
         run: |
           cd src/tests
-          ./run_tests.sh
+          ./run_tests.sh Release
 
       - name: Notify Feishu on failure
         if: failure()
