@@ -6,7 +6,7 @@ BUILD_TYPE=${1:-Debug}
 
 cmake -S . -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 cmake --build "$BUILD_DIR" --target test -- -j$(nproc || sysctl -n hw.ncpu)
-EXE="$BUILD_DIR/bin/$BUILD_TYPE/test"
+EXE="$BUILD_DIR/bin/test"
 if [ -f "$EXE" ]; then
   echo "Built: $EXE"
 else

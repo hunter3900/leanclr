@@ -33,5 +33,6 @@ if errorlevel 1 (
     popd
     exit /b 1
 )
+copy /Y CoreTests\bin\%CONFIG%\CoreTests.dll .\MiscDlls\
 popd
 echo All tests built successfully.
