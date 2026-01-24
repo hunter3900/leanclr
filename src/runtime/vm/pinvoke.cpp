@@ -57,8 +57,18 @@ RtResult<const PInvokeRegistry*> PInvokes::get_pinvoke_by_method(const metadata:
     {
         // signature: Namespace.Class.Method
         sb.clear();
+        sb.append_char('[');
+        sb.append_cstr(method->parent->image->get_name_no_ext());
+        sb.append_char(']');
+        size_t length = sb.length();
         RET_ERR_ON_FAIL(metadata::MetadataName::append_method_full_name_without_params(sb, method));
-        auto it = g_pinvoke_map.find(sb.as_cstr());
+
+        const char* signature_with_module = sb.as_cstr();
+        auto it = g_pinvoke_map.find(signature_with_module);
+        if (it != g_pinvoke_map.end())
+            RET_OK(&it->second);
+        const char* signature_without_module = sb.as_cstr() + length;
+        it = g_pinvoke_map.find(signature_without_module);
         if (it != g_pinvoke_map.end())
             RET_OK(&it->second);
     }
